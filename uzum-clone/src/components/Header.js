@@ -126,15 +126,15 @@ export function renderHeader(state, cartCount) {
   <div class="links wrap">
     ${
       [
-        'Хиты продаж',
+        'Распродажа',
         'Электроника',
-        'Одежда',
+        'Одежда и обувь',
         'Красота и здоровье',
         'Детские товары',
         'Дом и сад',
-        'Ещё',
+        'Продукты питания',
       ]
-        .map((item) => `<a href="#/catalog">${item}</a>`)
+        .map((item) => `<a data-category="${item}" href="#/catalog">${item}</a>`)
         .join('')
     }
   </div>

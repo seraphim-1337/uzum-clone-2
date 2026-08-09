@@ -47,9 +47,9 @@ a {
   color: inherit;
 }
 .wrap {
-  max-width: 1240px;
+  max-width: 1560px;
   margin: auto;
-  padding: 0 20px;
+  padding: 0 24px;
 }
 
 header {
@@ -461,7 +461,7 @@ header {
   box-shadow: var(--shadow-float);
 }
 .pic {
-  height: 225px;
+  height: 250px;
   position: relative;
   background: #f4f3f7;
   border-radius: 11px;
@@ -528,16 +528,16 @@ header {
   padding: 10px 4px 4px;
 }
 .title {
-  height: 40px;
+  height: 44px;
   overflow: hidden;
   margin: 0;
-  line-height: 19px;
-  font-size: 13px;
+  line-height: 21px;
+  font-size: 14.5px;
   color: #292631;
 }
 .rate {
-  font-size: 12px;
-  margin: 7px 0;
+  font-size: 13.5px;
+  margin: 8px 0;
   color: #f6a500;
   font-weight: 600;
 }
@@ -549,14 +549,14 @@ header {
   display: inline-block;
   background: #fff3a6;
   border-radius: 5px;
-  padding: 3px 6px;
-  margin-bottom: 7px;
-  font-size: 11px;
+  padding: 4px 7px;
+  margin-bottom: 8px;
+  font-size: 12px;
   color: #5f5211;
 }
 .card strong {
   display: block;
-  font-size: 16px;
+  font-size: 18px;
   letter-spacing: -0.2px;
 }
 .add {
@@ -565,9 +565,10 @@ header {
   background: #faf7ff;
   color: var(--purple);
   font-weight: 700;
+  font-size: 14.5px;
   width: 100%;
-  padding: 10px;
-  margin-top: 10px;
+  padding: 12px;
+  margin-top: 11px;
   transition:
     background var(--transition),
     color var(--transition),
@@ -582,7 +583,7 @@ header {
   transform: translateY(-1px);
 }
 
-.card-quantity{display:grid;grid-template-columns:34px 1fr 34px;align-items:center;min-height:38px;margin-top:auto;border:1px solid #ded6e9;border-radius:11px;background:#faf8fd;overflow:hidden}.card-quantity button{height:38px;border:0;background:transparent;color:#7000ff;font-size:21px;cursor:pointer;transition:background 250ms ease}.card-quantity button:hover{background:#eee6ff}.card-quantity b{text-align:center;font-size:14px}
+.card-quantity{display:grid;grid-template-columns:40px 1fr 40px;align-items:center;min-height:44px;margin-top:auto;border:1px solid #ded6e9;border-radius:11px;background:#faf8fd;overflow:hidden}.card-quantity button{height:44px;border:0;background:transparent;color:#7000ff;font-size:23px;cursor:pointer;transition:background 250ms ease}.card-quantity button:hover{background:#eee6ff}.card-quantity b{text-align:center;font-size:15px}
 .products {
   padding-bottom: 45px;
 }

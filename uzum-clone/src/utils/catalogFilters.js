@@ -1,5 +1,6 @@
 const discountOf = (product) => {
-  if (Number(product.discount) > 0) return Number(product.discount);
+  const discount = Number(product.discount) || Number(product.discountPercentage);
+  if (discount > 0) return discount;
   if (product.oldPrice > product.price) return Math.round((1 - product.price / product.oldPrice) * 100);
   return 0;
 };

@@ -23,34 +23,35 @@ const fallbackProducts = [
   ['Набор для ухода за лицом', 149000, 'Красота и здоровье', 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=500&q=80'],
 ].map(([title, price, category, thumbnail], index) => ({ id: index + 1, title, price, category, thumbnail, rating: (4.5 + (index % 5) / 10).toFixed(1), reviews: 120 + index * 83, installment: Math.ceil(price / 12) }));
 
+const safeParse = (raw, fallback) => { try { return JSON.parse(raw); } catch { return fallback; } };
 const categories = [['⚡', 'Распродажа'], ['📱', 'Электроника'], ['👗', 'Одежда и обувь'], ['💄', 'Красота и здоровье'], ['🏠', 'Дом и сад'], ['🍼', 'Детские товары'], ['🛒', 'Продукты питания'], ['⚽', 'Спорт и отдых']];
-const state = { products: [], cart: JSON.parse(localStorage.getItem('uzum-cart') || '[]'), favorite: JSON.parse(localStorage.getItem('uzum-favorite') || '[]'), query: '', category: 'Все' };
+const state = { products: [], cart: safeParse(localStorage.getItem('uzum-cart') || '[]', []), favorite: safeParse(localStorage.getItem('uzum-favorite') || '[]', []), query: '', category: 'Все' };
 
 const cartCount = () => state.cart.reduce((total, item) => total + item.qty, 0);
 const persist = () => {
   localStorage.setItem('uzum-cart', JSON.stringify(state.cart));
   localStorage.setItem('uzum-favorite', JSON.stringify(state.favorite));
 };
-const visibleProducts = () => state.products.filter((product) => (!state.query || product.title.toLowerCase().includes(state.query.toLowerCase())) && (state.category === 'Все' || product.category === state.category || state.category === 'Распродажа'));
+const visibleProducts = () => state.products.filter((product) => {
+  if (state.query && !product.title.toLowerCase().includes(state.query.toLowerCase())) return false;
+  if (state.category === 'Все') return true;
+  if (state.category === 'Распродажа') return Boolean(product.discount || product.oldPrice);
+  return product.category === state.category;
+});
 const go = (route) => { location.hash = route; };
-
-function renderProfile() {
-  return `<main class="wrap auth"><section><h1>Вход или регистрация</h1><p>Введите номер телефона — пришлём код для входа</p><form id="login"><label>Номер телефона<input required pattern="[0-9+ ()-]{9,}" placeholder="+998 90 123 45 67"></label><button>Получить код</button></form><small>Продолжая, вы соглашаетесь с условиями сервиса и политикой конфиденциальности</small></section></main>`;
-}
-
-function renderCheckout() {
-  return `<main class="wrap auth"><section><h1>Оформление заказа</h1><form id="checkout"><label>Получатель<input required placeholder="Имя и фамилия"></label><label>Телефон<input required placeholder="+998 90 123 45 67"></label><label>Адрес доставки<input required placeholder="Город, улица, дом"></label><button>Подтвердить заказ</button></form></section></main>`;
-}
 
 function pageFor(route) {
   const options = { products: visibleProducts(), favorites: state.favorite, formatPrice, categories, category: state.category, cart: state.cart };
   if (route === '#/') return renderHomePage(options);
   if (route === '#/catalog') {
     return renderCatalogPage({
-      products: state.products,
+      products: visibleProducts(),
       favorites: state.favorite,
       formatPrice,
       cart: state.cart,
+      categories: [...new Set(state.products.map((product) => product.category).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'ru')),
+      initialQuery: state.query,
+      initialCategory: state.category === 'Все' || state.category === 'Распродажа' ? 'all' : state.category,
     });
   }
 if (route.startsWith("#/product/")) {
@@ -93,20 +94,47 @@ function bindEvents() {
   document.querySelectorAll('[data-category]').forEach((button) => {
     button.onclick = () => {
       state.category = button.dataset.category;
-      go('#/catalog');
+      if (location.hash === '#/catalog') {
+        render();
+      } else {
+        go('#/catalog');
+      }
     };
   });
 
   document.querySelector('#search-form')?.addEventListener('submit', (event) => {
     event.preventDefault();
     state.query = document.querySelector('#search').value.trim();
-    go('#/catalog');
+    if (location.hash === '#/catalog') {
+      render();
+    } else {
+      go('#/catalog');
+    }
   });
 
   // Переход на страницу товара
   document.querySelectorAll('[data-product]').forEach((card) => {
     card.onclick = () => {
       go(`#/product/${card.dataset.product}`);
+    };
+  });
+
+  // Купить сейчас: добавить в корзину и перейти к оформлению
+  document.querySelectorAll('[data-buy-now]').forEach((button) => {
+    button.onclick = (event) => {
+      event.stopPropagation();
+
+      const id = Number(button.dataset.buyNow);
+      const item = state.cart.find((entry) => entry.id === id);
+
+      if (item) {
+        item.qty += 1;
+      } else {
+        state.cart.push({ id, qty: 1 });
+      }
+
+      persist();
+      go('#/checkout');
     };
   });
 
@@ -180,11 +208,6 @@ function bindEvents() {
     };
   });
 
-  document.querySelector('#login')?.addEventListener('submit', (event) => {
-    event.preventDefault();
-    showToast('Код отправлен на указанный номер');
-  });
-
   document.querySelector('#checkout')?.addEventListener('submit', (event) => {
     event.preventDefault();
     state.cart = [];
@@ -202,10 +225,51 @@ function render() {
   bindEvents();
 }
 
+const PRICE_RATE = 12700;
+const CATEGORY_MAP = {
+  'beauty': 'Красота и здоровье',
+  'fragrances': 'Красота и здоровье',
+  'skin-care': 'Красота и здоровье',
+  'skincare': 'Красота и здоровье',
+  'furniture': 'Дом и сад',
+  'home-decoration': 'Дом и сад',
+  'kitchen-accessories': 'Дом и сад',
+  'lighting': 'Дом и сад',
+  'groceries': 'Продукты питания',
+  'laptops': 'Электроника',
+  'smartphones': 'Электроника',
+  'tablets': 'Электроника',
+  'mobile-accessories': 'Электроника',
+  'mens-watches': 'Электроника',
+  'womens-watches': 'Электроника',
+  'mens-shirts': 'Одежда и обувь',
+  'mens-shoes': 'Одежда и обувь',
+  'womens-dresses': 'Одежда и обувь',
+  'womens-shoes': 'Одежда и обувь',
+  'womens-bags': 'Одежда и обувь',
+  'womens-jewellery': 'Одежда и обувь',
+  'sunglasses': 'Одежда и обувь',
+  'tops': 'Одежда и обувь',
+  'sports-accessories': 'Спорт и отдых',
+  'motorcycle': 'Спорт и отдых',
+  'vehicle': 'Спорт и отдых',
+};
+
+function normalizeProduct(product) {
+  const category = CATEGORY_MAP[product.category] || product.category;
+  const price = Math.round(product.price * PRICE_RATE / 1000) * 1000;
+  const discount = Math.round(Number(product.discountPercentage));
+  const normalized = { ...product, category, price, installment: product.installment ? Math.round(price / 12) : product.installment };
+  if (discount > 0 && !Number(product.discount) && !product.oldPrice) {
+    return { ...normalized, discount, oldPrice: Math.round(price / (1 - discount / 100)) };
+  }
+  return normalized;
+}
+
 async function loadProducts() {
   try {
     const products = await getProducts();
-    state.products = products.length && !/Р/.test(products[0].title) ? products : fallbackProducts;
+    state.products = products.length && !/Р/.test(products[0].title) ? products.map(normalizeProduct) : fallbackProducts;
   } catch {
     state.products = fallbackProducts;
   }
