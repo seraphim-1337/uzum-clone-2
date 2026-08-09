@@ -2,9 +2,56 @@ import '../../styles/checkout.css';
 
 export function renderCheckoutPage({ items, total, formatPrice }) {
   if (!items.length) {
-    return `<main class="checkout-page wrap"><div class="checkout-page__heading"><span>Оформление заказа</span><h1>Ваш заказ</h1></div><div class="checkout-empty"><div class="checkout-empty__icon">🛒</div><h2>Корзина пуста</h2><p>Добавьте товары в корзину, чтобы оформить заказ.</p><button class="checkout-empty__button" data-route="#/catalog">Перейти в каталог</button></div></main>`;
+    return `<main class="checkout-page wrap">
+      <div class="checkout-page__heading"><span>Оформление заказа</span><h1>Ваш заказ</h1></div>
+      <div class="checkout-empty">
+        <div class="checkout-empty__icon">🛒</div>
+        <h2>Корзина пуста</h2>
+        <p>Добавьте товары в корзину, чтобы оформить заказ.</p>
+        <button class="checkout-empty__button" data-route="#/catalog">Перейти в каталог</button>
+      </div>
+    </main>`;
   }
 
   const delivery = total ? 0 : 0;
-  return `<main class="checkout-page wrap"><div class="checkout-page__heading"><span>Оформление заказа</span><h1>Проверьте детали заказа</h1></div><div class="checkout-page__grid"><form id="checkout" class="checkout-form"><section><h2>Получатель</h2><div class="checkout-form__fields"><label>Имя и фамилия<input required name="name" autocomplete="name" placeholder="Например, Азиз Ахмедов"></label><label>Телефон<input required name="phone" inputmode="tel" pattern="[0-9+ ()-]{9,}" autocomplete="tel" placeholder="+998 90 123 45 67"></label></div></section><section><h2>Доставка</h2><div class="checkout-options"><label class="checkout-option"><input required type="radio" name="delivery" value="pickup" checked><span><b>Пункт выдачи Uzum</b><small>Бесплатно · Получите заказ рядом с домом</small></span></label><label class="checkout-option"><input type="radio" name="delivery" value="courier"><span><b>Курьерская доставка</b><small>Бесплатно при заказе от 100 000 сум</small></span></label></div><label class="checkout-form__address">Адрес или пункт выдачи<input required name="address" autocomplete="street-address" placeholder="Город, улица, дом или выберите пункт"></label></section><section><h2>Способ оплаты</h2><div class="checkout-options checkout-options--payment"><label class="checkout-option"><input required type="radio" name="payment" value="card" checked><span><b>Картой онлайн</b><small>Uzcard, Humo, Visa</small></span></label><label class="checkout-option"><input type="radio" name="payment" value="cash"><span><b>При получении</b><small>Картой или наличными в пункте выдачи</small></span></label></div></section><button class="checkout-form__submit" type="submit">Подтвердить заказ</button><p class="checkout-form__note">Нажимая кнопку, вы соглашаетесь с условиями сервиса.</p></form><aside class="checkout-summary"><h2>Ваш заказ</h2><div class="checkout-summary__items">${items.length ? items.map(item => `<div><span>${item.title} × ${item.qty}</span><b>${formatPrice(item.price * item.qty)}</b></div>`).join('') : '<p>В корзине пока нет товаров</p>'}</div><div class="checkout-summary__row"><span>Товары</span><b>${formatPrice(total)}</b></div><div class="checkout-summary__row"><span>Доставка</span><b>${delivery ? formatPrice(delivery) : 'Бесплатно'}</b></div><div class="checkout-summary__total"><span>Итого</span><strong>${formatPrice(total + delivery)}</strong></div></aside></div></main>`;
+  return `<main class="checkout-page wrap">
+    <div class="checkout-page__heading"><span>Оформление заказа</span><h1>Проверьте детали заказа</h1></div>
+    <div class="checkout-page__grid">
+      <form id="checkout" class="checkout-form">
+        <section>
+          <h2>Получатель</h2>
+          <div class="checkout-form__fields">
+            <label>Имя и фамилия<input required name="name" autocomplete="name" placeholder="Например, Азиз Ахмедов"></label>
+            <label>Телефон<input required name="phone" inputmode="tel" pattern="[0-9+ ()-]{9,}" autocomplete="tel" placeholder="+998 90 123 45 67"></label>
+          </div>
+        </section>
+        <section>
+          <h2>Доставка</h2>
+          <div class="checkout-options">
+            <label class="checkout-option"><input required type="radio" name="delivery" value="pickup" checked><span><b>Пункт выдачи Uzum</b><small>Бесплатно · Получите заказ рядом с домом</small></span></label>
+            <label class="checkout-option"><input type="radio" name="delivery" value="courier"><span><b>Курьерская доставка</b><small>Бесплатно при заказе от 100 000 сум</small></span></label>
+          </div>
+          <label class="checkout-form__address">Адрес или пункт выдачи<input required name="address" autocomplete="street-address" placeholder="Город, улица, дом или выберите пункт"></label>
+        </section>
+        <section>
+          <h2>Способ оплаты</h2>
+          <div class="checkout-options checkout-options--payment">
+            <label class="checkout-option"><input required type="radio" name="payment" value="card" checked><span><b>Картой онлайн</b><small>Uzcard, Humo, Visa</small></span></label>
+            <label class="checkout-option"><input type="radio" name="payment" value="cash"><span><b>При получении</b><small>Картой или наличными в пункте выдачи</small></span></label>
+          </div>
+        </section>
+        <button class="checkout-form__submit" type="submit">Подтвердить заказ</button>
+        <p class="checkout-form__note">Нажимая кнопку, вы соглашаетесь с условиями сервиса.</p>
+      </form>
+      <aside class="checkout-summary">
+        <h2>Ваш заказ</h2>
+        <div class="checkout-summary__items">
+          ${items.map(item => `<div class="checkout-summary__item"><span>${item.title} <em class="checkout-summary__qty">× ${item.qty}</em></span><b>${formatPrice(item.price * item.qty)}</b></div>`).join('')}
+        </div>
+        <div class="checkout-summary__row"><span>Товары</span><b>${formatPrice(total)}</b></div>
+        <div class="checkout-summary__row"><span>Доставка</span><b>${delivery ? formatPrice(delivery) : 'Бесплатно'}</b></div>
+        <div class="checkout-summary__total"><span>Итого</span><strong>${formatPrice(total + delivery)}</strong></div>
+      </aside>
+    </div>
+  </main>`;
 }

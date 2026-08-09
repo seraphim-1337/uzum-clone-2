@@ -86,7 +86,7 @@ export function renderProductPage({ product, related, formatPrice }) {
       <section class="product-page__info">
         <div class="product-page__meta"><span>${product.brand || 'Uzum Market'}</span><span>Артикул: ${product.id}</span></div>
         <h1 class="product-page__title">${product.title || 'Товар Uzum Market'}</h1>
-        <div class="product-page__rating">★ ${safeRating(product.rating)} <a href="#reviews">${reviews} отзывов</a></div>
+        <div class="product-page__rating"><span class="product-page__stars">★ ${safeRating(product.rating)}</span><a href="#reviews">${reviews} отзывов</a></div>
         <div class="product-page__pricing">
           <div class="product-page__price">${formatPrice(price)}</div>
           ${hasDiscount ? `<div class="product-page__price-row"><div class="product-page__old-price">${formatPrice(product.oldPrice)}</div>${discountPercent ? `<span class="product-page__discount">−${discountPercent}%</span>` : ''}</div>` : ''}
@@ -98,7 +98,11 @@ export function renderProductPage({ product, related, formatPrice }) {
           <button data-add="${product.id}">🛒 В корзину</button>
           <button data-fav="${product.id}">♡ В избранное</button>
         </div>
-        <div class="product-page__benefits"><div><span>🛡️</span><p><b>Гарантия качества</b><small>Проверенный продавец</small></p></div><div><span>↩️</span><p><b>Лёгкий возврат</b><small>В течение 10 дней</small></p></div><div><span>💳</span><p><b>Удобная оплата</b><small>Картой или в рассрочку</small></p></div></div>
+        <div class="product-page__benefits">
+          <div><span>🛡️</span><p><b>Гарантия качества</b><small>Проверенный продавец</small></p></div>
+          <div><span>↩️</span><p><b>Лёгкий возврат</b><small>В течение 10 дней</small></p></div>
+          <div><span>💳</span><p><b>Удобная оплата</b><small>Картой или в рассрочку</small></p></div>
+        </div>
       </section>
     </div>
     <section class="product-page__section product-page__section--fade-in"><h2>Описание</h2><p>${product.description || 'Описание товара пока отсутствует.'}</p></section>

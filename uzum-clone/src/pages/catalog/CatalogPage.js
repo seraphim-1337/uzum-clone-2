@@ -31,22 +31,87 @@ export function sortProducts(products, sort) {
   });
 }
 
+const SORT_LABELS = {
+  popular: 'По популярности',
+  'price-asc': 'Сначала дешевле',
+  'price-desc': 'Сначала дороже',
+  rating: 'По рейтингу',
+  name: 'По названию',
+};
+
+function describeActiveFilters(state) {
+  const chips = [];
+  if (state.query) chips.push({ key: 'query', label: `Запрос «${state.query}»` });
+  if (state.category !== 'all') {
+    chips.push({ key: 'category', label: state.category === 'sale' ? 'Распродажа' : state.category });
+  }
+  if (state.minPrice || state.maxPrice) {
+    const parts = [];
+    if (state.minPrice) parts.push(`от ${state.minPrice}`);
+    if (state.maxPrice) parts.push(`до ${state.maxPrice}`);
+    chips.push({ key: 'price', label: `Цена: ${parts.join(' ')}` });
+  }
+  if (state.sort !== 'popular') {
+    chips.push({ key: 'sort', label: SORT_LABELS[state.sort] || state.sort });
+  }
+  return chips;
+}
+
+function renderActiveFilters(container, state) {
+  const chips = describeActiveFilters(state);
+  container.innerHTML = '';
+  container.hidden = !chips.length;
+  if (!chips.length) return;
+
+  const title = document.createElement('span');
+  title.className = 'catalog-active__title';
+  title.textContent = 'Активные фильтры:';
+  container.append(title);
+
+  chips.forEach((chip) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'catalog-active__chip';
+    button.dataset.catalogChip = chip.key;
+    button.textContent = chip.label;
+    const cross = document.createElement('span');
+    cross.setAttribute('aria-hidden', 'true');
+    cross.textContent = '×';
+    button.append(cross);
+    container.append(button);
+  });
+
+  const reset = document.createElement('button');
+  reset.type = 'button';
+  reset.className = 'catalog-active__reset';
+  reset.dataset.catalogActiveReset = '';
+  reset.textContent = 'Сбросить';
+  container.append(reset);
+}
+
 export function renderFilters(categories) {
   const categoryList = ['all', 'sale', ...categories.filter((category) => category !== 'Распродажа')];
   return `<aside class="catalog-filters">
-    <div class="filter-heading"><b>Категории</b><button type="button" data-catalog-reset>Сбросить</button></div>
-    <div class="catalog-categories">
-      ${categoryList.map((category) => {
-        const label = category === 'all' ? 'Все' : category === 'sale' ? '⚡ Распродажа' : category;
-        const value = category === 'all' ? 'all' : category === 'sale' ? 'sale' : category;
-        return `<button type="button" class="catalog-category" data-catalog-category="${value}">${label}</button>`;
-      }).join('')}
+    <div class="catalog-filters__section">
+      <div class="catalog-filters__header">
+        <b>Категории</b>
+        <button type="button" data-catalog-reset>Сбросить</button>
+      </div>
+      <div class="catalog-categories">
+        ${categoryList.map((category) => {
+          const label = category === 'all' ? 'Все' : category === 'sale' ? '⚡ Распродажа' : category;
+          const value = category === 'all' ? 'all' : category === 'sale' ? 'sale' : category;
+          return `<button type="button" class="catalog-category" data-catalog-category="${value}">${label}</button>`;
+        }).join('')}
+      </div>
     </div>
-    <div class="catalog-price">
-      <b>Цена, сум</b>
-      <div>
-        <input data-catalog-min type="number" min="0" placeholder="От">
-        <input data-catalog-max type="number" min="0" placeholder="До">
+    <div class="catalog-filters__section">
+      <div class="catalog-filters__header"><b>Цена, сум</b></div>
+      <div class="catalog-price">
+        <div>
+          <input data-catalog-min type="number" min="0" placeholder="От">
+          <input data-catalog-max type="number" min="0" placeholder="До">
+        </div>
       </div>
     </div>
   </aside>`;
@@ -74,6 +139,7 @@ function mountCatalog(products, options = {}) {
   const max = root.querySelector('[data-catalog-max]');
   const counter = root.querySelector('[data-catalog-count]');
   const grid = root.querySelector('[data-catalog-grid]');
+  const active = root.querySelector('[data-catalog-active]');
   const categoryButtons = [...root.querySelectorAll('[data-catalog-category]')];
   const cards = [...root.querySelectorAll('.catalog-product')];
 
@@ -88,9 +154,16 @@ function mountCatalog(products, options = {}) {
     });
     visible.forEach((product) => grid.append(cards.find((card) => Number(card.dataset.productId) === product.id)));
     counter.textContent = `Найдено товаров: ${visible.length}`;
+    renderActiveFilters(active, state);
     const empty = root.querySelector('[data-catalog-empty]');
     if (!visible.length && !empty) {
-      grid.insertAdjacentHTML('afterend', '<div class="catalog-empty" data-catalog-empty><span>🔍</span><h2>Ничего не найдено</h2><p>Попробуйте изменить запрос или сбросить фильтры</p></div>');
+      grid.insertAdjacentHTML('afterend', `
+        <div class="catalog-empty" data-catalog-empty>
+          <span>🔍</span>
+          <h2>Ничего не найдено</h2>
+          <p>Попробуйте изменить запрос или сбросить фильтры</p>
+          <button type="button" class="catalog-empty__reset" data-catalog-reset-any>Сбросить фильтры</button>
+        </div>`);
     }
     if (visible.length && empty) empty.remove();
   };
@@ -121,6 +194,31 @@ function mountCatalog(products, options = {}) {
     max.value = '';
     categoryButtons.forEach((item) => item.classList.toggle('is-active', item.dataset.catalogCategory === 'all'));
     update();
+  });
+
+  active.addEventListener('click', (event) => {
+    const chip = event.target.closest('[data-catalog-chip]');
+    if (chip) {
+      const key = chip.dataset.catalogChip;
+      if (key === 'query') { state.query = ''; search.value = ''; }
+      else if (key === 'category') {
+        state.category = 'all';
+        categoryButtons.forEach((item) => item.classList.toggle('is-active', item.dataset.catalogCategory === 'all'));
+      }
+      else if (key === 'price') { state.minPrice = 0; state.maxPrice = 0; min.value = ''; max.value = ''; }
+      else if (key === 'sort') { state.sort = 'popular'; sort.value = 'popular'; }
+      update();
+      return;
+    }
+    if (event.target.closest('[data-catalog-active-reset]')) {
+      root.querySelector('[data-catalog-reset]').click();
+    }
+  });
+
+  root.addEventListener('click', (event) => {
+    if (event.target.closest('[data-catalog-reset-any]')) {
+      root.querySelector('[data-catalog-reset]').click();
+    }
   });
 
   update();
@@ -154,6 +252,7 @@ export function renderCatalogPage({ products = [], favorites = [], formatPrice, 
     <div class="catalog-layout">
       ${renderFilters(categoryList)}
       <section class="catalog-results">
+        <div class="catalog-active" data-catalog-active hidden></div>
         <p class="catalog-count" data-catalog-count>Найдено товаров: ${products.length}</p>
         <div class="grid catalog-grid" data-catalog-grid>${renderProductGrid(products, favorites, formatPrice, cart)}</div>
       </section>
