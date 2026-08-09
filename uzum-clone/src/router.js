@@ -7,6 +7,10 @@ import { renderCartPage } from './pages/cart/CartPage.js';
 import { renderFavoritesPage } from './pages/favorites/FavoritesPage.js';
 import { renderCatalogPage } from './pages/catalog/CatalogPage.js';
 import { formatPrice } from './utils/formatPrice.js';
+import { renderFooter } from './components/Footer.js';
+import { renderCheckoutPage } from './pages/checkout/CheckoutPage.js';
+import { bindProfilePage, renderProfilePage } from './pages/profile/ProfilePage.js';
+import { renderNotFoundPage } from './pages/not-found/NotFoundPage.js';
 
 const fallbackProducts = [
   ['Смартфон Samsung Galaxy A55 8/256GB', 3999000, 'Samsung', 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=500&q=80'],
@@ -17,7 +21,7 @@ const fallbackProducts = [
   ['Кофемашина DeLonghi Dedica', 1749000, 'Бытовая техника', 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=500&q=80'],
   ['Умные часы Huawei Watch Fit', 899000, 'Электроника', 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=500&q=80'],
   ['Набор для ухода за лицом', 149000, 'Красота и здоровье', 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=500&q=80'],
-].map(([title, price, category, image], index) => ({ id: index + 1, title, price, category, image, rating: (4.5 + (index % 5) / 10).toFixed(1), reviews: 120 + index * 83, installment: Math.ceil(price / 12) }));
+].map(([title, price, category, thumbnail], index) => ({ id: index + 1, title, price, category, thumbnail, rating: (4.5 + (index % 5) / 10).toFixed(1), reviews: 120 + index * 83, installment: Math.ceil(price / 12) }));
 
 const categories = [['⚡', 'Распродажа'], ['📱', 'Электроника'], ['👗', 'Одежда и обувь'], ['💄', 'Красота и здоровье'], ['🏠', 'Дом и сад'], ['🍼', 'Детские товары'], ['🛒', 'Продукты питания'], ['⚽', 'Спорт и отдых']];
 const state = { products: [], cart: JSON.parse(localStorage.getItem('uzum-cart') || '[]'), favorite: JSON.parse(localStorage.getItem('uzum-favorite') || '[]'), query: '', category: 'Все' };
@@ -30,10 +34,6 @@ const persist = () => {
 const visibleProducts = () => state.products.filter((product) => (!state.query || product.title.toLowerCase().includes(state.query.toLowerCase())) && (state.category === 'Все' || product.category === state.category || state.category === 'Распродажа'));
 const go = (route) => { location.hash = route; };
 
-function renderFooter() {
-  return `<footer><div class="wrap foot"><div><b class="logo">uzum <i>market</i></b><p>Маркетплейс с доставкой от 1 дня по Узбекистану</p></div><div><b>Покупателям</b><a>Как сделать заказ</a><a>Доставка и оплата</a><a>Возврат товаров</a></div><div><b>Продавцам</b><a>Стать продавцом</a><a>Кабинет продавца</a><a>Реклама на Uzum</a></div><div><b>Скачать приложение</b><div class="stores"> App Store<br>▶ Google Play</div></div></div><div class="copyright wrap">© 2026 Uzum Market. Все права защищены.</div></footer>`;
-}
-
 function renderProfile() {
   return `<main class="wrap auth"><section><h1>Вход или регистрация</h1><p>Введите номер телефона — пришлём код для входа</p><form id="login"><label>Номер телефона<input required pattern="[0-9+ ()-]{9,}" placeholder="+998 90 123 45 67"></label><button>Получить код</button></form><small>Продолжая, вы соглашаетесь с условиями сервиса и политикой конфиденциальности</small></section></main>`;
 }
@@ -43,19 +43,24 @@ function renderCheckout() {
 }
 
 function pageFor(route) {
-  const options = { products: visibleProducts(), favorites: state.favorite, formatPrice, categories, category: state.category };
+  const options = { products: visibleProducts(), favorites: state.favorite, formatPrice, categories, category: state.category, cart: state.cart };
   if (route === '#/') return renderHomePage(options);
   if (route === '#/catalog') {
     return renderCatalogPage({
       products: state.products,
       favorites: state.favorite,
       formatPrice,
+      cart: state.cart,
     });
   }
 if (route.startsWith("#/product/")) {
   const id = Number(route.split("/")[2]);
 
   const product = state.products.find((p) => p.id === id);
+
+  if (!product) {
+    return renderProductPage({ product: null, related: [], formatPrice });
+  }
 
   const related = state.products
     .filter((p) => p.category === product.category && p.id !== product.id)
@@ -72,8 +77,12 @@ if (route.startsWith("#/product/")) {
     const items = state.cart.map((entry) => ({ ...state.products.find((product) => product.id === entry.id), qty: entry.qty })).filter((item) => item.id);
     return renderCartPage({ items, total: items.reduce((sum, item) => sum + item.price * item.qty, 0), cartCount: cartCount(), formatPrice });
   }
-  if (route === '#/checkout') return renderCheckout();
-  return renderProfile();
+  if (route === '#/checkout') {
+    const items = state.cart.map((entry) => ({ ...state.products.find((product) => product.id === entry.id), qty: entry.qty })).filter((item) => item.id);
+    return renderCheckoutPage({ items, total: items.reduce((sum, item) => sum + item.price * item.qty, 0), formatPrice });
+  }
+  if (route === '#/profile') return renderProfilePage();
+  return renderNotFoundPage();
 }
 
 function bindEvents() {
@@ -127,19 +136,22 @@ function bindEvents() {
       event.stopPropagation();
 
       const id = Number(button.dataset.fav);
+      const wasFavorite = state.favorite.includes(id);
 
-      state.favorite = state.favorite.includes(id)
+      state.favorite = wasFavorite
         ? state.favorite.filter((favoriteId) => favoriteId !== id)
         : [...state.favorite, id];
 
       persist();
       render();
+      showToast(wasFavorite ? 'Товар удалён из избранного' : 'Товар добавлен в избранное');
     };
   });
 
   // Изменение количества
   document.querySelectorAll('[data-qty]').forEach((button) => {
-    button.onclick = () => {
+    button.onclick = (event) => {
+      event.stopPropagation();
       const [id, delta] = button.dataset.qty.split('|').map(Number);
 
       const item = state.cart.find((entry) => entry.id === id);
@@ -164,6 +176,7 @@ function bindEvents() {
 
       persist();
       render();
+      showToast('Товар удалён из корзины');
     };
   });
 
@@ -179,6 +192,8 @@ function bindEvents() {
     go('#/');
     showToast('Заказ успешно оформлен!');
   });
+
+  bindProfilePage(showToast);
 }
 
 function render() {

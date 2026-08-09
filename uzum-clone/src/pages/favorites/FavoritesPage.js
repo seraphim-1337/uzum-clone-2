@@ -1,11 +1,12 @@
 import '../../styles/favorites.css';
 
 function renderFavoriteCard(product, formatPrice) {
+  const reviews = Array.isArray(product.reviews) ? product.reviews.length : product.reviews || 0;
   return `<article class="favorite-card" data-route="#/product/${product.id}">
     <button class="favorite-card__remove" data-fav="${product.id}" aria-label="Удалить из избранного">♡</button>
-    <div class="favorite-card__image"><img src="${product.image}" alt="${product.title}" loading="lazy"></div>
+    <div class="favorite-card__image"><img src="${product.thumbnail}" alt="${product.title}" loading="lazy"></div>
     <div class="favorite-card__content">
-      <p class="favorite-card__rating">★ ${product.rating} <span>(${product.reviews})</span></p>
+      <p class="favorite-card__rating">★ ${product.rating} <span>(${reviews})</span></p>
       <h2>${product.title}</h2>
       <div class="favorite-card__prices"><strong>${formatPrice(product.price)}</strong>${product.oldPrice ? `<span>${formatPrice(product.oldPrice)}</span>` : ''}</div>
       <button class="favorite-card__add" data-add="${product.id}">🛒 В корзину</button>

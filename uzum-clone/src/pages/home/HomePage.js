@@ -1,12 +1,16 @@
+import '../../styles/home.css';
 import { renderCard } from '../../components/ProductCard.js';
-import { renderHero } from '../../components/Hero.js';
 import { renderCategories } from '../../components/Categories.js';
+import { mountHeroSlider, renderHero } from '../../components/Hero.js';
 
-export function renderProducts(products, favorites, formatPrice, title = 'Популярные товары') {
-  const cards = products.map((product) => renderCard(product, favorites, formatPrice)).join('');
-  return `<section class="products"><div class="section-title"><h2>${title}</h2><a href="#/catalog">Смотреть все →</a></div><div class="grid">${cards || '<p class="empty">Ничего не найдено. Попробуйте изменить запрос.</p>'}</div></section>`;
-}
-
-export function renderHomePage({ products, favorites, formatPrice, categories }) {
-  return `<main class="wrap home">${renderHero()}${renderCategories(categories)}${renderProducts(products, favorites, formatPrice)}</main>`;
+let sectionObserver;
+function mountLoadMore() { const button = document.querySelector('[data-home-load-more]'); const cards = [...document.querySelectorAll('[data-home-all-card]')]; if (!button) return; button.addEventListener('click', () => { cards.filter((card) => card.hidden).slice(0, 20).forEach((card) => { card.hidden = false; card.classList.add('home-all-card--visible'); }); if (!cards.some((card) => card.hidden)) button.remove(); }); }
+function mountHomeAnimations() { sectionObserver?.disconnect(); const sections = document.querySelectorAll('[data-home-section]'); sectionObserver = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('home-section--visible'); sectionObserver.unobserve(entry.target); } }), { threshold: .12 }); sections.forEach((section) => sectionObserver.observe(section)); }
+function renderProductRow(title, products, favorites, formatPrice, cart, modifier = '') { return `<section class="home-section ${modifier}" data-home-section><div class="home-section__heading"><div><p>${modifier === 'home-section--sale' ? 'ВЫГОДНЫЕ ПРЕДЛОЖЕНИЯ' : 'UZUM MARKET'}</p><h2>${title}</h2></div><a href="#/catalog">Смотреть все <span>→</span></a></div><div class="home-product-row">${products.map((product) => renderCard(product, favorites, formatPrice, cart)).join('')}</div></section>`; }
+export function renderProducts(products, favorites, formatPrice, title = 'Популярные товары', cart = []) { return renderProductRow(title, products, favorites, formatPrice, cart); }
+export function renderHomePage({ products, favorites, formatPrice, categories, cart = [] }) {
+  const popular = products.slice(0, 6); const newProducts = products.filter((product) => product.isNew).slice(0, 6); const sales = products.filter((product) => product.discount || product.oldPrice).slice(0, 6); const recommended = [...products].reverse().slice(0, 6); const recentIds = JSON.parse(localStorage.getItem('uzum-recent-products') || '[]'); const recent = recentIds.map((id) => products.find((product) => product.id === id)).filter(Boolean).slice(0, 10);
+  setTimeout(() => { mountHomeAnimations(); mountHeroSlider(); mountLoadMore(); }, 0);
+  const allProducts = products.map((product, index) => `<div data-home-all-card ${index >= 20 ? 'hidden' : ''}>${renderCard(product, favorites, formatPrice, cart)}</div>`).join('');
+  return `<main class="wrap home home--premium">${renderHero()}${recent.length ? renderProductRow('Недавно просмотренные', recent, favorites, formatPrice, cart, 'home-section--recent') : ''}<section class="home-categories" data-home-section><div class="home-section__heading"><div><p>БЫСТРЫЙ ВЫБОР</p><h2>Категории</h2></div></div>${renderCategories(categories)}</section>${renderProductRow('Популярное', popular, favorites, formatPrice, cart)}${renderProductRow('Новинки', newProducts.length ? newProducts : products.slice(2, 8), favorites, formatPrice, cart, 'home-section--new')}${renderProductRow('Акции', sales, favorites, formatPrice, cart, 'home-section--sale')}${renderProductRow('Рекомендуем для вас', recommended, favorites, formatPrice, cart, 'home-section--recommended')}<section class="home-section home-all-products" data-home-section><div class="home-section__heading"><div><p>ВЕСЬ КАТАЛОГ</p><h2>Все товары</h2></div></div><div class="home-all-products__grid">${allProducts}</div>${products.length > 20 ? '<button class="home-all-products__more" data-home-load-more>Показать ещё 20</button>' : ''}</section></main>`;
 }

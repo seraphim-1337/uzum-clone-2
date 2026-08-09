@@ -12,6 +12,7 @@ npm run server
 
 В отдельном терминале:
 
+
 ```bash
 npm run dev
 ```

@@ -11,7 +11,7 @@ export function renderCart(items, total, cartCount, formatPrice) {
       (item) => `
     <article class="cart-item">
       <div class="cart-item__image"><img
-  src="${item.image}"
+  src="${item.thumbnail}"
   alt="${item.title}"
   loading="lazy"
 /></div>

@@ -1,21 +1,4 @@
-let lastAddedId = null;
-
-document.addEventListener('click', (event) => {
-  const button = event.target.closest('[data-add]');
-  if (!button) return;
-  lastAddedId = Number(button.dataset.add);
-  setTimeout(() => {
-    const currentButton = document.querySelector(`[data-add="${lastAddedId}"]`);
-    if (currentButton?.classList.contains('add--added')) {
-      currentButton.classList.remove('add--added');
-      currentButton.textContent = '🛒 В корзину';
-    }
-    lastAddedId = null;
-  }, 1000);
-}, true);
-
-export function renderCard(product, favorites, formatPrice) {
-  const isFavorite = favorites.includes(product.id);
-  const isAdded = product.id === lastAddedId;
-  return `<article class="card"><div class="pic"><img src="${product.image}" alt="${product.title}" loading="lazy"><button class="heart ${isFavorite ? 'on' : ''}" data-fav="${product.id}">♡</button><em>−${10 + product.id}%</em></div><div class="card-body"><p class="title">${product.title}</p><div class="rate">★ ${product.rating} <span>(${product.reviews})</span></div><small class="installment">от ${formatPrice(product.installment || Math.ceil(product.price / 12))}/мес.</small><strong>${formatPrice(product.price)}</strong><button class="add ${isAdded ? 'add--added' : ''}" data-add="${product.id}">${isAdded ? '✓ Добавлено' : '🛒 В корзину'}</button></div></article>`;
+export function renderCard(product, favorites, formatPrice, cart = []) {
+  const isFavorite = favorites.includes(product.id); const qty = cart.find((item) => item.id === product.id)?.qty || 0; const discount = product.discount || (product.oldPrice ? Math.round((1 - product.price / product.oldPrice) * 100) : 0); const badges = [product.isNew && 'Новинка', product.isHit && 'Хит', discount && `−${discount}%`, product.stock === 1 && 'Последний товар', product.freeDelivery && 'Бесплатная доставка'].filter(Boolean); const cartControl = qty ? `<div class="card-quantity" aria-label="Количество товара"><button data-qty="${product.id}|-1" aria-label="Уменьшить количество">−</button><b>${qty}</b><button data-qty="${product.id}|1" aria-label="Увеличить количество">+</button></div>` : `<button class="add" data-add="${product.id}">🛒 В корзину</button>`; const reviews = Array.isArray(product.reviews) ? product.reviews.length : product.reviews || 0;
+  return `<article class="card" data-product="${product.id}"><div class="pic"><img src="${product.thumbnail}" alt="${product.title}" loading="lazy"><button class="heart ${isFavorite ? 'on' : ''}" data-fav="${product.id}">♡</button>${badges.length ? `<div class="card-badges">${badges.map((badge) => `<em>${badge}</em>`).join('')}</div>` : ''}</div><div class="card-body"><p class="title">${product.title}</p><div class="rate">★ ${product.rating} <span>(${reviews})</span></div><small class="installment">от ${formatPrice(product.installment || Math.ceil(product.price / 12))}/мес.</small><strong>${formatPrice(product.price)}</strong>${product.oldPrice ? `<del>${formatPrice(product.oldPrice)}</del>` : ''}${cartControl}</div></article>`;
 }

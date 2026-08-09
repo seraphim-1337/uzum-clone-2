@@ -581,6 +581,8 @@ header {
   box-shadow: 0 8px 15px rgba(112, 0, 255, 0.24);
   transform: translateY(-1px);
 }
+
+.card-quantity{display:grid;grid-template-columns:34px 1fr 34px;align-items:center;min-height:38px;margin-top:auto;border:1px solid #ded6e9;border-radius:11px;background:#faf8fd;overflow:hidden}.card-quantity button{height:38px;border:0;background:transparent;color:#7000ff;font-size:21px;cursor:pointer;transition:background 250ms ease}.card-quantity button:hover{background:#eee6ff}.card-quantity b{text-align:center;font-size:14px}
 .products {
   padding-bottom: 45px;
 }
