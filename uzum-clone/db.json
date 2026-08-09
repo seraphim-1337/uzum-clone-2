@@ -11803,6 +11803,192 @@
         "https://cdn.dummyjson.com/product-images/womens-watches/women's-wrist-watch/3.webp"
       ],
       "thumbnail": "https://cdn.dummyjson.com/product-images/womens-watches/women's-wrist-watch/thumbnail.webp"
+    },
+    {
+      "id": 195,
+      "title": "Детские кроссовки Nike Air",
+      "description": "Лёгкие и удобные детские кроссовки Nike Air. Дышащий материал и гибкая подошва — идеально для активных игр и прогулок каждый день.",
+      "category": "kids",
+      "price": 129.99,
+      "discountPercentage": 12.35,
+      "rating": 4.62,
+      "stock": 34,
+      "tags": ["детские товары", "обувь", "кроссовки"],
+      "brand": "Nike",
+      "sku": "KID-NIK-AIR-195",
+      "weight": 3,
+      "warrantyInformation": "1 year warranty",
+      "shippingInformation": "Ships in 1-2 business days",
+      "availabilityStatus": "In Stock",
+      "reviews": [
+        {
+          "rating": 5,
+          "comment": "Ребёнку очень удобно бегать!",
+          "date": "2025-05-01T10:00:00.000Z",
+          "reviewerName": "Aziz Karimov",
+          "reviewerEmail": "aziz.karimov@example.com"
+        },
+        {
+          "rating": 4,
+          "comment": "Качество отличное, размер совпал",
+          "date": "2025-05-02T10:00:00.000Z",
+          "reviewerName": "Lola Usmanova",
+          "reviewerEmail": "lola.usmanova@example.com"
+        },
+        {
+          "rating": 5,
+          "comment": "Берём второй раз, очень довольны",
+          "date": "2025-05-03T10:00:00.000Z",
+          "reviewerName": "Timur Norbekov",
+          "reviewerEmail": "timur.norbekov@example.com"
+        }
+      ],
+      "returnPolicy": "30 days return policy",
+      "minimumOrderQuantity": 1,
+      "images": [
+        "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=500&q=80"
+      ],
+      "thumbnail": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=500&q=80"
+    },
+    {
+      "id": 196,
+      "title": "Детская сумочка через плечо",
+      "description": "Яркая детская сумочка через плечо с удобным ремешком. Подойдёт для прогулок, детского сада и школы.",
+      "category": "kids",
+      "price": 45.99,
+      "discountPercentage": 8.4,
+      "rating": 4.24,
+      "stock": 51,
+      "tags": ["детские товары", "сумки"],
+      "brand": "KidsStyle",
+      "sku": "KID-STY-SUM-196",
+      "weight": 2,
+      "warrantyInformation": "3 months warranty",
+      "shippingInformation": "Ships overnight",
+      "availabilityStatus": "In Stock",
+      "reviews": [
+        {
+          "rating": 5,
+          "comment": "Дочке очень понравилась, носит каждый день",
+          "date": "2025-05-02T10:00:00.000Z",
+          "reviewerName": "Malika Rahimova",
+          "reviewerEmail": "malika.rahimova@example.com"
+        },
+        {
+          "rating": 4,
+          "comment": "Милый дизайн, аккуратные швы",
+          "date": "2025-05-03T10:00:00.000Z",
+          "reviewerName": "Jasur Aliyev",
+          "reviewerEmail": "jasur.aliyev@example.com"
+        },
+        {
+          "rating": 4,
+          "comment": "Отличный подарок племяннице",
+          "date": "2025-05-04T10:00:00.000Z",
+          "reviewerName": "Sevara Toshpulatova",
+          "reviewerEmail": "sevara.toshpulatova@example.com"
+        }
+      ],
+      "returnPolicy": "7 days return policy",
+      "minimumOrderQuantity": 1,
+      "images": [
+        "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=500&q=80"
+      ],
+      "thumbnail": "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=500&q=80"
+    },
+    {
+      "id": 197,
+      "title": "Смарт-часы для детей",
+      "description": "Умные часы для детей с GPS-трекингом, звонками и шагомером. Родители всегда знают, где находится ребёнок — безопасность и удобство в одном аксессуаре.",
+      "category": "kids",
+      "price": 89.99,
+      "discountPercentage": 10.75,
+      "rating": 4.51,
+      "stock": 27,
+      "tags": ["детские товары", "электроника", "смарт-часы"],
+      "brand": "KidWatch",
+      "sku": "KID-KID-SMA-197",
+      "weight": 1,
+      "warrantyInformation": "1 year warranty",
+      "shippingInformation": "Ships in 3-5 business days",
+      "availabilityStatus": "In Stock",
+      "isNew": true,
+      "reviews": [
+        {
+          "rating": 5,
+          "comment": "Спокойно отпускаем ребёнка гулять, GPS работает отлично",
+          "date": "2025-05-03T10:00:00.000Z",
+          "reviewerName": "Dilnoza Saidova",
+          "reviewerEmail": "dilnoza.saidova@example.com"
+        },
+        {
+          "rating": 4,
+          "comment": "Заряд держит день-полтора, звонки чёткие",
+          "date": "2025-05-04T10:00:00.000Z",
+          "reviewerName": "Bekzod Yuldashev",
+          "reviewerEmail": "bekzod.yuldashev@example.com"
+        },
+        {
+          "rating": 5,
+          "comment": "Ребёнок в восторге от шагомера",
+          "date": "2025-05-05T10:00:00.000Z",
+          "reviewerName": "Gulnora Ashurova",
+          "reviewerEmail": "gulnora.ashurova@example.com"
+        }
+      ],
+      "returnPolicy": "30 days return policy",
+      "minimumOrderQuantity": 1,
+      "images": [
+        "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=500&q=80"
+      ],
+      "thumbnail": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=500&q=80"
+    },
+    {
+      "id": 198,
+      "title": "Детский планшет для развития",
+      "description": "Защищённый детский планшет с обучающими приложениями, играми и ярким экраном. Прочный корпус и режим родительского контроля.",
+      "category": "kids",
+      "price": 199.99,
+      "discountPercentage": 15.2,
+      "rating": 4.3,
+      "stock": 19,
+      "tags": ["детские товары", "электроника", "планшет"],
+      "brand": "TabiKid",
+      "sku": "KID-TAB-PLA-198",
+      "weight": 4,
+      "warrantyInformation": "2 year warranty",
+      "shippingInformation": "Ships in 1 week",
+      "availabilityStatus": "In Stock",
+      "isNew": true,
+      "reviews": [
+        {
+          "rating": 5,
+          "comment": "Прочный и удобный, ребёнок учится с удовольствием",
+          "date": "2025-05-04T10:00:00.000Z",
+          "reviewerName": "Farrukh Ergashev",
+          "reviewerEmail": "farrukh.ergashev@example.com"
+        },
+        {
+          "rating": 4,
+          "comment": "Родительский контроль очень полезная функция",
+          "date": "2025-05-05T10:00:00.000Z",
+          "reviewerName": "Nilufar Ismoilova",
+          "reviewerEmail": "nilufar.ismoilova@example.com"
+        },
+        {
+          "rating": 4,
+          "comment": "Экран яркий, звук хороший",
+          "date": "2025-05-06T10:00:00.000Z",
+          "reviewerName": "Sardor Yusupov",
+          "reviewerEmail": "sardor.yusupov@example.com"
+        }
+      ],
+      "returnPolicy": "60 days return policy",
+      "minimumOrderQuantity": 1,
+      "images": [
+        "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=500&q=80"
+      ],
+      "thumbnail": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=500&q=80"
     }
   ]
 }

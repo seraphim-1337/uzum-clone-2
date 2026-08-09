@@ -11,6 +11,7 @@ import { renderFooter } from './components/Footer.js';
 import { renderCheckoutPage } from './pages/checkout/CheckoutPage.js';
 import { bindProfilePage, renderProfilePage } from './pages/profile/ProfilePage.js';
 import { renderNotFoundPage } from './pages/not-found/NotFoundPage.js';
+import { safePrice, safeRating, safeInt } from './utils/fallbacks.js';
 
 const fallbackProducts = [
   ['Смартфон Samsung Galaxy A55 8/256GB', 3999000, 'Samsung', 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=500&q=80'],
@@ -32,55 +33,82 @@ const persist = () => {
   localStorage.setItem('uzum-cart', JSON.stringify(state.cart));
   localStorage.setItem('uzum-favorite', JSON.stringify(state.favorite));
 };
+const isDiscounted = (product) => Boolean(product.discount || product.discountPercentage || product.oldPrice);
+const matchesCategory = (product, category) => category === 'Все' || (category === 'Распродажа' ? isDiscounted(product) : product.category === category);
 const visibleProducts = () => state.products.filter((product) => {
   if (state.query && !product.title.toLowerCase().includes(state.query.toLowerCase())) return false;
-  if (state.category === 'Все') return true;
-  if (state.category === 'Распродажа') return Boolean(product.discount || product.oldPrice);
-  return product.category === state.category;
+  return matchesCategory(product, state.category);
 });
 const go = (route) => { location.hash = route; };
 
+function parseCatalogParams() {
+  const raw = location.hash.split('?')[1] || '';
+  const params = new URLSearchParams(raw);
+  return {
+    query: params.get('query') || '',
+    category: params.get('category') || 'all',
+  };
+}
+
+function currentRoute() {
+  return location.hash.split('?')[0] || '#/';
+}
+
+function categoryFromParam(param) {
+  return categories.some(([, name]) => name === param) ? param : 'all';
+}
+
 function pageFor(route) {
-  const options = { products: visibleProducts(), favorites: state.favorite, formatPrice, categories, category: state.category, cart: state.cart };
-  if (route === '#/') return renderHomePage(options);
-  if (route === '#/catalog') {
-    return renderCatalogPage({
+  const products = state.products;
+
+  if (route === '#/') {
+    return renderHomePage({
       products: visibleProducts(),
       favorites: state.favorite,
       formatPrice,
+      categories,
+      category: state.category,
       cart: state.cart,
-      categories: [...new Set(state.products.map((product) => product.category).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'ru')),
-      initialQuery: state.query,
-      initialCategory: state.category === 'Все' || state.category === 'Распродажа' ? 'all' : state.category,
     });
   }
-if (route.startsWith("#/product/")) {
-  const id = Number(route.split("/")[2]);
 
-  const product = state.products.find((p) => p.id === id);
-
-  if (!product) {
-    return renderProductPage({ product: null, related: [], formatPrice });
+  if (route === '#/catalog') {
+    const { query, category } = parseCatalogParams();
+    const initialCategory = category === 'Распродажа' ? 'sale' : categoryFromParam(category);
+    return renderCatalogPage({
+      products,
+      favorites: state.favorite,
+      formatPrice,
+      cart: state.cart,
+      categories: [...new Set(products.map((product) => product.category).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'ru')),
+      initialQuery: query,
+      initialCategory,
+    });
   }
 
-  const related = state.products
-    .filter((p) => p.category === product.category && p.id !== product.id)
-    .slice(0, 4);
+  if (route.startsWith("#/product/")) {
+    const id = Number(route.split("/")[2]);
+    const product = products.find((p) => p.id === id);
 
-  return renderProductPage({
-    product,
-    related,
-    formatPrice,
-  });
-}
-  if (route === '#/favorites') return renderFavoritesPage({ ...options, products: state.products });
+    if (!product) {
+      return renderProductPage({ product: null, related: [], formatPrice });
+    }
+
+    const related = products
+      .filter((p) => p.category === product.category && p.id !== product.id)
+      .slice(0, 4);
+
+    return renderProductPage({ product, related, formatPrice });
+  }
+
+  if (route === '#/favorites') return renderFavoritesPage({ products, favorites: state.favorite, formatPrice });
   if (route === '#/cart') {
-    const items = state.cart.map((entry) => ({ ...state.products.find((product) => product.id === entry.id), qty: entry.qty })).filter((item) => item.id);
-    return renderCartPage({ items, total: items.reduce((sum, item) => sum + item.price * item.qty, 0), cartCount: cartCount(), formatPrice });
+    const items = state.cart.map((entry) => ({ ...products.find((product) => product.id === entry.id), qty: entry.qty })).filter((item) => item.id);
+    return renderCartPage({ items, total: items.reduce((sum, item) => sum + safePrice(item.price) * item.qty, 0), cartCount: cartCount(), formatPrice });
   }
   if (route === '#/checkout') {
-    const items = state.cart.map((entry) => ({ ...state.products.find((product) => product.id === entry.id), qty: entry.qty })).filter((item) => item.id);
-    return renderCheckoutPage({ items, total: items.reduce((sum, item) => sum + item.price * item.qty, 0), formatPrice });
+    const items = state.cart.map((entry) => ({ ...products.find((product) => product.id === entry.id), qty: entry.qty })).filter((item) => item.id);
+    return renderCheckoutPage({ items, total: items.reduce((sum, item) => sum + safePrice(item.price) * item.qty, 0), formatPrice });
   }
   if (route === '#/profile') return renderProfilePage();
   return renderNotFoundPage();
@@ -93,11 +121,18 @@ function bindEvents() {
 
   document.querySelectorAll('[data-category]').forEach((button) => {
     button.onclick = () => {
-      state.category = button.dataset.category;
-      if (location.hash === '#/catalog') {
-        render();
+      const category = button.dataset.category;
+      if (category === 'Все') {
+        state.category = 'Все';
+        go('#/');
+        return;
+      }
+      state.category = category;
+      const param = category === 'Распродажа' ? 'sale' : category;
+      if (currentRoute() === '#/catalog') {
+        go(`#/catalog?category=${encodeURIComponent(param)}`);
       } else {
-        go('#/catalog');
+        go(`#/catalog?category=${encodeURIComponent(param)}`);
       }
     };
   });
@@ -105,10 +140,10 @@ function bindEvents() {
   document.querySelector('#search-form')?.addEventListener('submit', (event) => {
     event.preventDefault();
     state.query = document.querySelector('#search').value.trim();
-    if (location.hash === '#/catalog') {
-      render();
+    if (currentRoute() === '#/catalog') {
+      go(`#/catalog?query=${encodeURIComponent(state.query)}`);
     } else {
-      go('#/catalog');
+      go(`#/catalog?query=${encodeURIComponent(state.query)}`);
     }
   });
 
@@ -183,6 +218,7 @@ function bindEvents() {
       const [id, delta] = button.dataset.qty.split('|').map(Number);
 
       const item = state.cart.find((entry) => entry.id === id);
+      if (!item) return;
 
       item.qty += delta;
 
@@ -220,8 +256,8 @@ function bindEvents() {
 }
 
 function render() {
-  const route = location.hash.split('?')[0] || '#/';
-  document.querySelector('#app').innerHTML = renderHeader(state, cartCount()) + pageFor(route) + renderFooter();
+  const route = currentRoute();
+  document.querySelector('#app').innerHTML = renderHeader(state, cartCount(), currentRoute()) + pageFor(route) + renderFooter();
   bindEvents();
 }
 
@@ -231,6 +267,7 @@ const CATEGORY_MAP = {
   'fragrances': 'Красота и здоровье',
   'skin-care': 'Красота и здоровье',
   'skincare': 'Красота и здоровье',
+  'kids': 'Детские товары',
   'furniture': 'Дом и сад',
   'home-decoration': 'Дом и сад',
   'kitchen-accessories': 'Дом и сад',
@@ -257,9 +294,16 @@ const CATEGORY_MAP = {
 
 function normalizeProduct(product) {
   const category = CATEGORY_MAP[product.category] || product.category;
-  const price = Math.round(product.price * PRICE_RATE / 1000) * 1000;
+  const price = Math.round(safePrice(product.price) * PRICE_RATE / 1000) * 1000;
   const discount = Math.round(Number(product.discountPercentage));
-  const normalized = { ...product, category, price, installment: product.installment ? Math.round(price / 12) : product.installment };
+  const normalized = {
+    ...product,
+    category,
+    price,
+    rating: safeRating(product.rating),
+    stock: safeInt(product.stock, 0),
+    installment: product.installment ? Math.round(price / 12) : Math.ceil(price / 12),
+  };
   if (discount > 0 && !Number(product.discount) && !product.oldPrice) {
     return { ...normalized, discount, oldPrice: Math.round(price / (1 - discount / 100)) };
   }

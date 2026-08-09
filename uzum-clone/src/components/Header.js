@@ -67,8 +67,50 @@ function setupUiEffects() {
   prepareImages();
 }
 
-export function renderHeader(state, cartCount) {
+function sessionName() {
+  try {
+    const session = localStorage.getItem('uzum-session');
+    if (!session) return null;
+    const users = JSON.parse(localStorage.getItem('uzum-users') || '[]');
+    return users.find((user) => user.email === session)?.name || null;
+  } catch {
+    return null;
+  }
+}
+
+export function renderHeader(state, cartCount, route = '#/') {
   setTimeout(setupUiEffects, 0);
+
+  const parsed = route.split('?')[1] || '';
+  const params = new URLSearchParams(parsed);
+  const path = route.split('?')[0];
+  const activeCategory = params.get('category') || null;
+  const search = params.get('query');
+
+  const linkCategories = [
+    'Распродажа',
+    'Электроника',
+    'Одежда и обувь',
+    'Красота и здоровье',
+    'Детские товары',
+    'Дом и сад',
+    'Продукты питания',
+    'Спорт и отдых',
+  ];
+
+  const links = [
+    { label: 'Главная', param: null, route: '#/' },
+    ...linkCategories.map((label) => ({
+      label,
+      param: label === 'Распродажа' ? 'sale' : label,
+      route: `#/catalog?category=${encodeURIComponent(label === 'Распродажа' ? 'sale' : label)}`,
+    })),
+  ];
+
+  const isActive = (link) => path === link.route.split('?')[0] && (link.param ? link.param === activeCategory : !activeCategory && path === '#/');
+
+  const userName = sessionName();
+  const accountLabel = userName ? userName.split(' ')[0] : 'Войти';
 
   return `
 <header>
@@ -76,7 +118,7 @@ export function renderHeader(state, cartCount) {
   <div class="notice">
     <div class="wrap">
       Доставим ваш заказ бесплатно от 100 000 сум
-      <span>Пункты выдачи</span>
+      <a data-route="#/catalog?query=пункты выдачи">Пункты выдачи</a>
     </div>
   </div>
 
@@ -94,7 +136,7 @@ export function renderHeader(state, cartCount) {
     <form class="search" id="search-form">
       <input
         id="search"
-        value="${state.query}"
+        value="${search !== null ? search : state.query}"
         placeholder="Искать товары и категории"
       >
       <button>${icon('search')}</button>
@@ -102,9 +144,9 @@ export function renderHeader(state, cartCount) {
 
     <nav class="actions">
 
-      <button data-route="#/profile">
+      <button data-route="#/profile" aria-label="${userName ? 'Профиль' : 'Вход или регистрация'}">
         ${icon('user')}
-        <small>Войти</small>
+        <small>${accountLabel}</small>
       </button>
 
       <button data-route="#/favorites">
@@ -124,19 +166,12 @@ export function renderHeader(state, cartCount) {
   </div>
 
   <div class="links wrap">
-    ${
-      [
-        'Распродажа',
-        'Электроника',
-        'Одежда и обувь',
-        'Красота и здоровье',
-        'Детские товары',
-        'Дом и сад',
-        'Продукты питания',
-      ]
-        .map((item) => `<a data-category="${item}" href="#/catalog">${item}</a>`)
-        .join('')
-    }
+    ${links
+      .map(
+        (link) =>
+          `<a data-category="${link.label}" href="${link.route}" class="${isActive(link) ? 'is-active' : ''}">${link.label}</a>`
+      )
+      .join('')}
   </div>
 
 </header>

@@ -228,15 +228,20 @@ header {
   transition: color var(--transition);
 }
 .links a:hover,
-.links a:first-child {
+.links a.is-active {
   color: var(--purple);
 }
 .links a.is-active {
-  color: var(--purple);
   font-weight: 700;
 }
 .links a.is-active:after {
   transform: scaleX(1);
+}
+.links a:first-child {
+  color: #625e6a;
+}
+.links a:first-child.is-active {
+  color: var(--purple);
 }
 .links a:after {
   content: "";
@@ -251,8 +256,13 @@ header {
   transition: transform var(--transition);
 }
 .links a:hover:after,
-.links a:first-child:after {
+.links a.is-active:after {
   transform: scaleX(1);
+}
+.notice a {
+  margin-left: 25px;
+  color: var(--purple);
+  font-weight: 700;
 }
 
 .home {
@@ -403,12 +413,15 @@ header {
   color: var(--purple);
   transform: translateY(-4px);
 }
+.category-grid button.is-active {
+  color: var(--purple);
+}
 .category-grid span {
   height: 105px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #eeeaf7;
+  border: 1px solid transparent;
   border-radius: 15px;
   background: linear-gradient(145deg, #faf9ff, #f0eaff);
   font-size: 40px;
@@ -423,6 +436,11 @@ header {
   background: linear-gradient(145deg, #f1e8ff, #e7d8ff);
   box-shadow: 0 12px 24px rgba(99, 43, 181, 0.14);
   transform: scale(1.025);
+}
+.category-grid button.is-active span {
+  border-color: #d9c2ff;
+  background: linear-gradient(145deg, #eee6ff, #e2d0ff);
+  box-shadow: 0 7px 16px rgba(99, 43, 181, 0.16);
 }
 
 .section-title {
@@ -1227,6 +1245,7 @@ footer {
 .catalog-grid {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
+  align-content: start;
 }
 .catalog-product[hidden] {
   display: none;
@@ -1251,6 +1270,18 @@ footer {
 .catalog-empty p {
   margin: 0;
   color: #817a89;
+}
+.related-empty {
+  color: var(--muted);
+  margin: 0;
+}
+.checkout-form__fields label:nth-child(3) {
+  grid-column: 1 / -1;
+}
+@media (max-width: 760px) {
+  .home-product-row .card {
+    flex-basis: 172px;
+  }
 }
 @media (max-width: 980px) {
   .catalog-grid {
