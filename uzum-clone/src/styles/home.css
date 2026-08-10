@@ -447,6 +447,10 @@
   .home-categories {
     margin-top: 28px;
   }
+  .home-section__heading {
+    flex-wrap: wrap;
+    gap: 6px 12px;
+  }
   .home-section__heading h2 {
     font-size: 22px;
   }

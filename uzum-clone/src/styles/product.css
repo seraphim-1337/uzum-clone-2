@@ -458,7 +458,7 @@
     padding: 0 14px;
   }
   .product-page__top {
-    grid-template-columns: minmax(0, 1fr) minmax(280px, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 18px;
   }
   .product-page__thumbnails {
