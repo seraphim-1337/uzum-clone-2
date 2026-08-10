@@ -92,18 +92,17 @@ export function renderProductPage({ product, related, formatPrice }) {
           ${hasDiscount ? `<div class="product-page__price-row"><div class="product-page__old-price">${formatPrice(product.oldPrice)}</div>${discountPercent ? `<span class="product-page__discount">−${discountPercent}%</span>` : ''}</div>` : ''}
         </div>
         <div class="product-page__installment"><span>Рассрочка</span><b>от ${formatPrice(product.installment || Math.ceil(price / 12))} в месяц</b><small>на 12 месяцев без переплат</small></div>
-        <div class="product-page__delivery"><span>🚚</span><div><b>Доставка от 1 дня</b><p>${product.delivery || 'Бесплатная доставка в пункт выдачи'}</p></div></div>
         <div class="product-page__buy">
           <button class="product-page__buy-now" data-buy-now="${product.id}">Купить сейчас</button>
           <button data-add="${product.id}">🛒 В корзину</button>
           <button data-fav="${product.id}">♡ В избранное</button>
         </div>
-        <div class="product-page__benefits">
-          <div><span>🛡️</span><p><b>Гарантия качества</b><small>Проверенный продавец</small></p></div>
-          <div><span>↩️</span><p><b>Лёгкий возврат</b><small>В течение 10 дней</small></p></div>
-          <div><span>💳</span><p><b>Удобная оплата</b><small>Картой или в рассрочку</small></p></div>
-        </div>
       </section>
+      <aside class="product-page__info-card" aria-label="Информация о покупке">
+        <div class="product-page__perk"><span class="product-page__perk-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 2.8v5.4c0 4.6-3 8.2-7 9.8-4-1.6-7-5.2-7-9.8V5.8z"/><path d="M9 11.5l2.2 2.2L15 10"/></svg></span><div><b>Гарантия качества</b><small>Проверенный продавец</small></div></div>
+        <div class="product-page__perk"><span class="product-page__perk-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 1 1 0 12h-2"/></svg></span><div><b>Лёгкий возврат</b><small>В течение 10 дней</small></div></div>
+        <div class="product-page__perk"><span class="product-page__perk-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6h12v10H2z"/><path d="M14 10h4l3 3v3h-7z"/><circle cx="6.5" cy="17.5" r="1.8"/><circle cx="16.5" cy="17.5" r="1.8"/></svg></span><div><b>Доставка от 1 дня</b><small>${product.delivery || 'Бесплатная доставка в пункт выдачи'}</small></div></div>
+      </aside>
     </div>
     <section class="product-page__section product-page__section--fade-in"><h2>Описание</h2><p>${product.description || 'Описание товара пока отсутствует.'}</p></section>
     <section class="product-page__section product-page__specifications product-page__section--fade-in"><h2>Характеристики</h2><dl>${specifications(product)}</dl></section>

@@ -7,7 +7,7 @@
 /* ===== TOP: gallery + info ===== */
 .product-page__top {
   display: grid;
-  grid-template-columns: 88px minmax(340px, 1.05fr) minmax(360px, 0.95fr);
+  grid-template-columns: 88px minmax(320px, 1fr) minmax(360px, 1fr) minmax(280px, 0.95fr);
   gap: 24px;
   align-items: start;
 }
@@ -186,33 +186,6 @@
   font-size: 11px;
 }
 
-/* ---- Delivery ---- */
-.product-page__delivery {
-  display: flex;
-  gap: 11px;
-  align-items: flex-start;
-  padding: 13px 0;
-}
-.product-page__delivery > span {
-  display: grid;
-  place-items: center;
-  flex: 0 0 32px;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: #f2ecff;
-  font-size: 16px;
-}
-.product-page__delivery b {
-  font-size: 14px;
-  color: #2f2b36;
-}
-.product-page__delivery p {
-  margin: 2px 0 0;
-  color: #77737e;
-  font-size: 12px;
-}
-
 /* ---- Buy buttons ---- */
 .product-page__buy {
   display: grid;
@@ -267,6 +240,68 @@
   border-color: #b990ff;
   color: #7000ff;
   background: #f8f4ff;
+}
+
+/* ===== Info card (right column) ===== */
+.product-page__info-card {
+  display: flex;
+  flex-direction: column;
+  padding: 20px 22px 22px;
+  border: 1px solid #e8e8ef;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(39, 22, 74, 0.06);
+}
+
+.product-page__perk {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 40px;
+  padding: 15px 0;
+}
+
+.product-page__perk + .product-page__perk {
+  border-top: 1px solid #f0eef5;
+}
+
+.product-page__perk-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #f3edff;
+  color: #7000ff;
+}
+
+.product-page__perk-icon svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+
+.product-page__perk > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.product-page__perk b {
+  font-size: 14px;
+  font-weight: 700;
+  color: #2a2632;
+  line-height: 1.3;
+}
+
+.product-page__perk small {
+  font-size: 12px;
+  color: #8a8491;
+  line-height: 1.45;
 }
 
 /* ===== Sections: description, specs, related ===== */
@@ -379,8 +414,22 @@
 /* ===== Responsive ===== */
 @media (max-width: 1024px) {
   .product-page__top {
-    grid-template-columns: 76px minmax(290px, 1fr) minmax(290px, 1fr);
+    grid-template-columns: 76px minmax(260px, 1fr) minmax(290px, 1fr);
     gap: 18px;
+  }
+  .product-page__info-card {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 28px;
+    padding: 20px 24px 22px;
+  }
+  .product-page__perk {
+    min-height: 40px;
+  }
+  .product-page__perk:nth-child(2) {
+    border-top: 0;
+    padding-top: 15px;
   }
   .product-page__thumbnail {
     width: 66px;
@@ -433,6 +482,11 @@
     grid-column: 2;
     grid-row: 1 / span 2;
   }
+  .product-page__info-card {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    padding: 18px 20px 20px;
+  }
   .product-page__section {
     margin-top: 24px;
   }
@@ -463,6 +517,11 @@
     order: 3;
     width: 100%;
     gap: 14px;
+  }
+  .product-page__info-card {
+    order: 4;
+    width: 100%;
+    padding: 18px 20px 20px;
   }
   .product-page__title {
     font-size: 24px;
@@ -514,11 +573,14 @@
   flex-direction: column;
   height: 100%;
   min-width: 0;
+  position: relative;
   border: 1px solid var(--line);
   border-radius: 14px;
   background: var(--surface);
   box-shadow: 0 1px 0 rgba(31, 31, 38, 0.02);
-  overflow: hidden;
+  /* overflow:hidden removed: it clipped the discount badge ("−11%", "−15%" etc.)
+     at the rounded card border. Image corners stay rounded via .card .pic,
+     which keeps its own overflow:hidden + border-radius. */
   transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
 }
 .card:hover {
@@ -537,7 +599,9 @@
   margin: 8px 8px 0;
   border-radius: 12px;
   background: #f7f6fa;
-  overflow: hidden;
+  /* overflow:hidden removed: it clipped the discount badges (e.g. "−11%", "−15%")
+     against the rounded picture corners. The image corners stay rounded via
+     border-radius on the img below. */
 }
 .card .pic::after {
   display: none;
@@ -547,6 +611,7 @@
   height: 100%;
   object-fit: contain;
   padding: 16px;
+  border-radius: 10px;
   transition: transform 0.25s ease;
 }
 .card:hover .pic img {
@@ -566,6 +631,8 @@
 }
 .card .card-badges em {
   font-style: normal;
+  width: fit-content;
+  max-width: 100%;
   padding: 4.5px 8px;
   border-radius: 7px;
   background: rgba(255, 255, 255, 0.94);
@@ -573,11 +640,14 @@
   font-size: 11px;
   font-weight: 700;
   line-height: 1;
+  white-space: nowrap;
   box-shadow: 0 2px 6px rgba(31, 25, 55, 0.1);
 }
 .card .card-badges .card-badge--sale {
   background: #f21f47;
   color: #fff;
+  min-width: 42px;
+  text-align: center;
 }
 
 /* ---- Wishlist button ---- */
