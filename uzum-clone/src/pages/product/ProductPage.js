@@ -64,9 +64,9 @@ export function renderProductPage({ product, related, formatPrice }) {
   if (!product) return `<main class="wrap"><h1>Товар не найден</h1></main>`;
 
   let recentIds = [];
-  try { recentIds = JSON.parse(localStorage.getItem('uzum-recent-products') || '[]'); } catch { recentIds = []; }
+  try { recentIds = JSON.parse(localStorage.getItem('uzum-recent') || '[]'); } catch { recentIds = []; }
   const recent = recentIds.filter((id) => id !== product.id);
-  localStorage.setItem('uzum-recent-products', JSON.stringify([product.id, ...recent].slice(0, 10)));
+  localStorage.setItem('uzum-recent', JSON.stringify([product.id, ...recent].slice(0, 8)));
 
   const price = safePrice(product.price);
   const images = [...new Set((Array.isArray(product.images) ? product.images.filter(Boolean) : []).concat(product.thumbnail ? [product.thumbnail] : []))];

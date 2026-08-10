@@ -3,11 +3,14 @@ import '../../styles/profile.css';
 const key = 'uzum-profile';
 const usersKey = 'uzum-users';
 const sessionKey = 'uzum-session';
+const ordersKey = 'uzum-orders';
+const lastOrderKey = 'uzum-last-order';
 
 const safeParse = (raw, fallback) => { try { return JSON.parse(raw); } catch { return fallback; } };
 const loadProfile = () => safeParse(localStorage.getItem(key) || '{}', {});
 const loadUsers = () => safeParse(localStorage.getItem(usersKey) || '[]', []);
 const saveUsers = (users) => localStorage.setItem(usersKey, JSON.stringify(users));
+const loadOrders = () => safeParse(localStorage.getItem(ordersKey) || '[]', []);
 
 function currentUser() {
   const session = localStorage.getItem(sessionKey);
@@ -31,6 +34,76 @@ function registerUser(name, email, password) {
   localStorage.setItem(sessionKey, user.email);
   localStorage.setItem(key, JSON.stringify({ ...loadProfile(), name: user.name, email: user.email }));
   return user;
+}
+
+function formatPrice(value) {
+  return `${new Intl.NumberFormat('ru-RU').format(Math.round(value || 0))} сум`;
+}
+
+function formatDate(iso) {
+  try {
+    return new Intl.DateTimeFormat('ru-RU', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    }).format(new Date(iso));
+  } catch {
+    return '';
+  }
+}
+
+// Переносит последний оформленный заказ (из чек-аута) в постоянную историю заказов.
+// Старые заказы не удаляются; дубликаты по номеру не добавляются.
+function ingestLastOrder() {
+  const last = safeParse(localStorage.getItem(lastOrderKey) || 'null', null);
+  if (!last) return loadOrders();
+
+  const orders = loadOrders();
+  const exists = orders.some((order) => order.number === last.number);
+  const next = exists ? orders : [last, ...orders];
+  if (!exists) localStorage.setItem(ordersKey, JSON.stringify(next));
+  localStorage.removeItem(lastOrderKey);
+  return next;
+}
+
+function renderOrders(orders) {
+  if (!orders.length) {
+    return `<section class="profile-orders">
+      <div class="profile-orders__head"><h2>Мои заказы</h2></div>
+      <div class="profile-orders__empty">
+        <span>📦</span>
+        <p>Заказов пока нет</p>
+        <a href="#/catalog">Перейти в каталог</a>
+      </div>
+    </section>`;
+  }
+
+  const cards = orders.map((order) => {
+    const items = order.items || [];
+    const itemsHtml = items.length
+      ? `<ul class="profile-order__items">${items.map((item) => `<li class="profile-order__item"><span>${item.title} <em>× ${item.qty}</em></span><b>${formatPrice(item.price * item.qty)}</b></li>`).join('')}</ul>`
+      : '<p class="profile-order__items-empty">Состав заказа не сохранён</p>';
+
+    return `<article class="profile-order">
+      <div class="profile-order__header">
+        <div class="profile-order__id"><b>${order.number}</b><span>${formatDate(order.date)}</span></div>
+        <span class="profile-order__status">Оформлен</span>
+      </div>
+      ${itemsHtml}
+      <div class="profile-order__footer">
+        <div class="profile-order__meta">
+          <span>Доставка: ${order.deliveryLabel || '—'}</span>
+          <span>Оплата: ${order.paymentLabel || '—'}</span>
+        </div>
+        <div class="profile-order__total">Сумма <b>${formatPrice(order.total)}</b></div>
+      </div>
+    </article>`;
+  }).join('');
+
+  return `<section class="profile-orders">
+    <div class="profile-orders__head"><h2>Мои заказы</h2><span>${orders.length}</span></div>
+    <div class="profile-orders__list">${cards}</div>
+  </section>`;
 }
 
 function rerender() {
@@ -70,9 +143,10 @@ export function renderProfilePage() {
   if (!user) return renderAuthPage();
 
   const profile = loadProfile();
+  const orders = ingestLastOrder();
   const displayName = profile.name || user.name || 'Добро пожаловать!';
   const initials = displayName.split(' ').map((part) => part[0]).slice(0, 2).join('').toUpperCase();
-  return `<main class="profile-page wrap"><section class="profile-card"><div class="profile-card__intro"><div class="profile-avatar" aria-hidden="true">${initials}</div><div><span>Личный кабинет</span><h1>${displayName}</h1><p>Укажите данные, чтобы оформлять заказы быстрее.</p></div></div><form class="profile-form" data-profile-form><label>Имя и фамилия<input name="name" required autocomplete="name" value="${profile.name || ''}" placeholder="Ваше имя"></label><label>Телефон<input name="phone" required inputmode="tel" pattern="[0-9+ ()-]{9,}" autocomplete="tel" value="${profile.phone || ''}" placeholder="+998 90 123 45 67"></label><label>Email<input name="email" type="email" autocomplete="email" value="${profile.email || ''}" placeholder="you@example.com"></label><label>Город<input name="city" autocomplete="address-level2" value="${profile.city || ''}" placeholder="Ташкент"></label><button type="submit">Сохранить изменения</button></form></section><aside class="profile-benefits"><h2>Uzum Market</h2><p>Все ваши заказы, избранное и персональные предложения — в одном месте.</p><a href="#/catalog">Перейти в каталог →</a><button class="profile-logout" data-auth-logout>Выйти из аккаунта</button></aside></main>`;
+  return `<main class="profile-page wrap"><section class="profile-card"><div class="profile-card__intro"><div class="profile-avatar" aria-hidden="true">${initials}</div><div><span>Личный кабинет</span><h1>${displayName}</h1><p>Укажите данные, чтобы оформлять заказы быстрее.</p></div></div><form class="profile-form" data-profile-form><label>Имя и фамилия<input name="name" required autocomplete="name" value="${profile.name || ''}" placeholder="Ваше имя"></label><label>Телефон<input name="phone" required inputmode="tel" pattern="[0-9+ ()-]{9,}" autocomplete="tel" value="${profile.phone || ''}" placeholder="+998 90 123 45 67"></label><label>Email<input name="email" type="email" autocomplete="email" value="${profile.email || ''}" placeholder="you@example.com"></label><label>Город<input name="city" autocomplete="address-level2" value="${profile.city || ''}" placeholder="Ташкент"></label><button type="submit">Сохранить изменения</button></form></section><aside class="profile-benefits"><h2>Uzum Market</h2><p>Все ваши заказы, избранное и персональные предложения — в одном месте.</p><a href="#/catalog">Перейти в каталог →</a><button class="profile-logout" data-auth-logout>Выйти из аккаунта</button></aside>${renderOrders(orders)}</main>`;
 }
 
 export function bindProfilePage(showToast) {

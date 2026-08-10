@@ -382,6 +382,10 @@
   background: #fff5d3;
   color: #8a6200;
 }
+.home-section--recent .home-section__heading p {
+  background: #eef1ff;
+  color: #4a5bd6;
+}
 
 /* ===== ANIMATIONS ===== */
 @keyframes home-float {

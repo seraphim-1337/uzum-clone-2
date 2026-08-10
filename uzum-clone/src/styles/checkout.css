@@ -277,6 +277,96 @@
   box-shadow: 0 14px 22px rgba(112, 0, 255, 0.28);
 }
 
+/* ===== SUCCESS STATE ===== */
+.checkout-success {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 64px 24px;
+  border: 1px solid #dccdf6;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(39, 22, 74, 0.06);
+  text-align: center;
+}
+.checkout-success__icon {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #eef9f2;
+  color: #00a35a;
+  font-size: 34px;
+  font-weight: 800;
+}
+.checkout-success h1 {
+  margin: 8px 0 0;
+  font-size: 26px;
+  letter-spacing: -0.4px;
+}
+.checkout-success__number {
+  margin: 0;
+  color: #716978;
+  font-size: 14px;
+}
+.checkout-success__number b {
+  color: #221e2b;
+  font-size: 16px;
+  letter-spacing: 0.4px;
+}
+.checkout-success__details {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+  max-width: 420px;
+  margin-top: 8px;
+  padding: 18px 20px;
+  border: 1px solid #eeeaf2;
+  border-radius: 14px;
+  background: #fcfaff;
+}
+.checkout-success__details div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.checkout-success__details span {
+  color: #716978;
+  font-size: 13px;
+}
+.checkout-success__details b {
+  color: #2f2b36;
+  font-size: 13px;
+}
+.checkout-success__note {
+  margin: 4px 0 0;
+  color: #716978;
+  font-size: 13px;
+}
+.checkout-success__actions {
+  margin-top: 8px;
+}
+.checkout-success__actions a {
+  display: inline-block;
+  padding: 14px 26px;
+  border-radius: 12px;
+  background: #7000ff;
+  color: #fff;
+  font: 700 15px Inter, Arial, sans-serif;
+  text-decoration: none;
+  box-shadow: 0 10px 18px rgba(112, 0, 255, 0.22);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+.checkout-success__actions a:hover {
+  background: #5d00d6;
+  transform: translateY(-2px);
+  box-shadow: 0 14px 22px rgba(112, 0, 255, 0.28);
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 800px) {
   .checkout-page__grid {

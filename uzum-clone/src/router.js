@@ -140,11 +140,22 @@ function bindEvents() {
   document.querySelector('#search-form')?.addEventListener('submit', (event) => {
     event.preventDefault();
     state.query = document.querySelector('#search').value.trim();
-    if (currentRoute() === '#/catalog') {
-      go(`#/catalog?query=${encodeURIComponent(state.query)}`);
-    } else {
-      go(`#/catalog?query=${encodeURIComponent(state.query)}`);
+    const catalogSearch = document.querySelector('[data-catalog-search]');
+
+    if (currentRoute() === '#/catalog' && catalogSearch) {
+      catalogSearch.value = state.query;
+      catalogSearch.dispatchEvent(new Event('input', { bubbles: true }));
+
+      const { category } = parseCatalogParams();
+      const params = new URLSearchParams();
+      if (state.query) params.set('query', state.query);
+      if (category && category !== 'all') params.set('category', category);
+      const queryString = params.toString();
+      history.replaceState(null, '', queryString ? `#/catalog?${queryString}` : '#/catalog');
+      return;
     }
+
+    go(`#/catalog?query=${encodeURIComponent(state.query)}`);
   });
 
   // Переход на страницу товара

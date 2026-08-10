@@ -182,6 +182,87 @@
 .summary__row .green {
   color: #00a35a;
 }
+/* ---- Promo code ---- */
+.cart-page .summary__promo {
+  margin: 17px 0 0;
+  padding-top: 17px;
+  border-top: 1px solid #ece9f0;
+}
+.cart-page .promo-form {
+  display: flex;
+  gap: 8px;
+}
+.cart-page .promo-form input {
+  flex: 1;
+  min-width: 0;
+  height: 42px;
+  padding: 0 13px;
+  border: 1px solid #e4e0e9;
+  border-radius: 10px;
+  background: #fff;
+  color: #37323d;
+  font: 600 13px Inter, Arial, sans-serif;
+  outline: 0;
+  text-transform: uppercase;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.cart-page .promo-form input::placeholder {
+  color: #aaa4b3;
+  font-weight: 500;
+  text-transform: none;
+}
+.cart-page .promo-form input:focus {
+  border-color: #a978ff;
+  box-shadow: 0 0 0 4px rgba(112, 0, 255, 0.1);
+}
+.cart-page .promo-form button {
+  flex: 0 0 auto;
+  height: 42px;
+  padding: 0 15px;
+  border: 0;
+  border-radius: 10px;
+  background: #eee7ff;
+  color: #6d21d0;
+  font: 700 12px Inter, Arial, sans-serif;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.cart-page .promo-form button:hover {
+  background: #e0d2fb;
+}
+.cart-page .promo-hint {
+  margin: 8px 0 0;
+  color: #e22f4a;
+  font-size: 12px;
+}
+.cart-page .promo-active {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  background: #eef9f2;
+  color: #278a59;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.cart-page .promo-active b {
+  font-weight: 800;
+}
+.cart-page .promo-clear {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #278a59;
+  font: 600 12px Inter, Arial, sans-serif;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+.cart-page .promo-clear:hover {
+  opacity: 0.7;
+}
 .cart-page .summary hr {
   margin: 19px 0;
   border: 0;
