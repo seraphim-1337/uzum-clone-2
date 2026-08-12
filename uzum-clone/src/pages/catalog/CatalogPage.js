@@ -2,6 +2,11 @@ import { renderCard } from '../../components/ProductCard.js';
 import '../../styles/catalog.css';
 
 const isDiscounted = (product) => Boolean(product.discount || product.discountPercentage || product.oldPrice);
+const isErrorProducts = (products) => products.length > 0 && !products[0].images;
+const skeletonCard = () => `<div class="card sk-card"><div class="pic sk-pic"></div><div class="card-body"><i class="sk-line sk-line--title"></i><i class="sk-line sk-line--rate"></i><i class="sk-line sk-line--price"></i><i class="sk-line sk-line--btn"></i></div></div>`;
+const skeletonGrid = (count = 8) => Array.from({ length: count }, () => skeletonCard()).join('');
+const productsErrorBlock = () => `<div class="products-error" data-products-error><span>⚠️</span><h2>Не удалось загрузить товары</h2><p>Проверьте подключение к интернету и попробуйте ещё раз</p><button type="button" class="products-error__retry" data-retry-products>Повторить</button></div>`;
+function mountRetry() { const retry = document.querySelector('[data-retry-products]'); if (retry) retry.addEventListener('click', () => location.reload()); }
 
 export function filterProducts(products, filters) {
   const query = filters.query.trim().toLowerCase();
@@ -225,18 +230,52 @@ function mountCatalog(products, options = {}) {
 }
 
 export function renderCatalogPage({ products = [], favorites = [], formatPrice, cart = [], categories = [], initialQuery = '', initialCategory = 'all' }) {
-  const categoryList = categories.length
-    ? categories
-    : [...new Set(products.map((product) => product.category).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'ru'));
-  const title = initialCategory === 'sale'
+  const pageTitle = initialCategory === 'sale'
     ? 'Распродажа'
     : initialCategory && initialCategory !== 'all'
       ? initialCategory
       : 'Каталог товаров';
+  const crumb = initialCategory === 'sale' ? 'Распродажа' : initialCategory && initialCategory !== 'all' ? initialCategory : 'Каталог';
+
+  if (isErrorProducts(products)) {
+    setTimeout(() => mountRetry(), 0);
+    return `<main class="wrap catalog-page" data-catalog-root>
+      <div class="crumb">Главная / ${crumb}</div>
+      <h1>${pageTitle}</h1>
+      <section class="catalog-results">${productsErrorBlock()}</section>
+    </main>`;
+  }
+
+  if (!products.length) {
+    return `<main class="wrap catalog-page" data-catalog-root>
+      <div class="crumb">Главная / ${crumb}</div>
+      <h1>${pageTitle}</h1>
+      <div class="catalog-toolbar">
+        <label class="catalog-search"><span>⌕</span><input type="search" data-catalog-search placeholder="Поиск по названию товара" autocomplete="off"></label>
+        <label class="catalog-sort">Сортировка
+          <select data-catalog-sort>
+            <option value="popular">По популярности</option>
+            <option value="price-asc">Сначала дешевле</option>
+            <option value="price-desc">Сначала дороже</option>
+            <option value="rating">По рейтингу</option>
+            <option value="name">По названию</option>
+          </select>
+        </label>
+      </div>
+      <section class="catalog-results">
+        <p class="catalog-count" data-catalog-count>Загрузка товаров…</p>
+        <div class="grid catalog-grid catalog-grid--loading">${skeletonGrid(8)}</div>
+      </section>
+    </main>`;
+  }
+
+  const categoryList = categories.length
+    ? categories
+    : [...new Set(products.map((product) => product.category).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'ru'));
   setTimeout(() => mountCatalog(products, { initialQuery, initialCategory }), 0);
   return `<main class="wrap catalog-page" data-catalog-root>
-    <div class="crumb">Главная / ${initialCategory === 'sale' ? 'Распродажа' : initialCategory && initialCategory !== 'all' ? initialCategory : 'Каталог'}</div>
-    <h1>${title}</h1>
+    <div class="crumb">Главная / ${crumb}</div>
+    <h1>${pageTitle}</h1>
     <div class="catalog-toolbar">
       <label class="catalog-search"><span>⌕</span><input type="search" data-catalog-search placeholder="Поиск по названию товара" autocomplete="off"></label>
       <label class="catalog-sort">Сортировка
