@@ -66,6 +66,29 @@ function ingestLastOrder() {
   return next;
 }
 
+const ORDER_STEPS = ['Оформлен', 'Собирается', 'Передан в доставку', 'Доставлен'];
+
+// Возвращает текущий статус заказа. Старые заказы без поля status
+// автоматически считаются на первом этапе («Оформлен»).
+function getOrderStatus(order) {
+  const status = order && order.status ? String(order.status) : 'Оформлен';
+  return ORDER_STEPS.includes(status) ? status : 'Оформлен';
+}
+
+function renderOrderStepper(status) {
+  const currentIndex = ORDER_STEPS.indexOf(status);
+
+  return `<ol class="order-status__stepper">
+    ${ORDER_STEPS.map((step, index) => {
+      const state = index < currentIndex ? 'is-done' : index === currentIndex ? 'is-current' : 'is-future';
+      return `<li class="order-status__step ${state}">
+        <span class="order-status__dot" aria-hidden="true"></span>
+        <span class="order-status__label">${step}</span>
+      </li>`;
+    }).join('')}
+  </ol>`;
+}
+
 function renderOrders(orders) {
   if (!orders.length) {
     return `<section class="profile-orders">
@@ -87,7 +110,7 @@ function renderOrders(orders) {
     return `<article class="profile-order">
       <div class="profile-order__header">
         <div class="profile-order__id"><b>${order.number}</b><span>${formatDate(order.date)}</span></div>
-        <span class="profile-order__status">Оформлен</span>
+        <span class="profile-order__status">${getOrderStatus(order)}</span>
       </div>
       ${itemsHtml}
       <div class="profile-order__footer">
@@ -97,6 +120,9 @@ function renderOrders(orders) {
         </div>
         <div class="profile-order__total">Сумма <b>${formatPrice(order.total)}</b></div>
       </div>
+      <div class="profile-order__actions">
+        <a class="profile-order__link" href="#/order/${encodeURIComponent(order.number)}" data-route="#/order/${encodeURIComponent(order.number)}">Подробнее</a>
+      </div>
     </article>`;
   }).join('');
 
@@ -104,6 +130,96 @@ function renderOrders(orders) {
     <div class="profile-orders__head"><h2>Мои заказы</h2><span>${orders.length}</span></div>
     <div class="profile-orders__list">${cards}</div>
   </section>`;
+}
+
+function decodeOrderId(value) {
+  try {
+    return decodeURIComponent(value || '');
+  } catch {
+    return value || '';
+  }
+}
+
+function orderDetailItemsHtml(items) {
+  if (!items.length) {
+    return '<p class="order-detail__empty">Состав заказа не сохранён</p>';
+  }
+
+  return `<ul class="order-detail__items">${items
+    .map((item) => {
+      const image = item.thumbnail || item.image || '';
+      const qty = item.qty || 0;
+      const price = item.price != null ? item.price : 0;
+      const imageHtml = image ? `<img src="${image}" alt="${item.title || ''}" loading="lazy">` : '';
+      return `<li class="order-detail__item">
+        ${imageHtml}
+        <div class="order-detail__item-body">
+          <span class="order-detail__item-title">${item.title || 'Товар'}</span>
+          <span class="order-detail__item-qty">${qty} шт × <em>${item.price != null ? formatPrice(item.price) : '—'}</em></span>
+        </div>
+        <b class="order-detail__item-total">${formatPrice(price * qty)}</b>
+      </li>`;
+    })
+    .join('')}</ul>`;
+}
+
+export function renderOrderDetailPage(orderId) {
+  const orders = ingestLastOrder();
+  const target = decodeOrderId(orderId);
+  const order = orders.find((item) => String(item.number) === target) || null;
+
+  if (!order) {
+    return `<main class="order-detail wrap">
+      <a class="order-detail__back" href="#/profile" data-route="#/profile">Вернуться к заказам</a>
+      <section class="order-detail__card">
+        <p class="order-detail__not-found">Заказ не найден</p>
+      </section>
+    </main>`;
+  }
+
+  const items = order.items || [];
+  const deliveryPrice = order.deliveryPrice != null ? order.deliveryPrice : order.deliveryCost;
+  const discount = Number(order.discount) > 0 ? order.discount : null;
+  const status = getOrderStatus(order);
+  const isLastStatus = status === ORDER_STEPS[ORDER_STEPS.length - 1];
+  const nextStatusButton = isLastStatus
+    ? ''
+    : `<button class="order-detail__next-status" type="button" data-order-status-next="${encodeURIComponent(order.number)}">Следующий статус</button>`;
+
+  return `<main class="order-detail wrap">
+    <a class="order-detail__back" href="#/profile" data-route="#/profile">Вернуться к заказам</a>
+    <section class="order-detail__card">
+      <div class="order-detail__header">
+        <div class="order-detail__id">
+          <b>Заказ № ${order.number}</b>
+          <span>${formatDate(order.date)}</span>
+        </div>
+        <span class="profile-order__status">${status}</span>
+      </div>
+      ${renderOrderStepper(status)}
+      ${nextStatusButton}
+      ${orderDetailItemsHtml(items)}
+      <div class="order-detail__info">
+        <div class="order-detail__row"><span>Способ доставки</span><b>${order.deliveryLabel || '—'}</b></div>
+        <div class="order-detail__row"><span>Стоимость доставки</span><b>${deliveryPrice != null ? (Number(deliveryPrice) === 0 ? 'Бесплатно' : formatPrice(deliveryPrice)) : '—'}</b></div>
+        <div class="order-detail__row"><span>Способ оплаты</span><b>${order.paymentLabel || '—'}</b></div>
+        ${discount != null ? `<div class="order-detail__row order-detail__row--discount"><span>Скидка</span><b>-${formatPrice(discount)}</b></div>` : ''}
+      </div>
+      <div class="order-detail__total"><span>Итого</span><b>${formatPrice(order.total)}</b></div>
+    </section>
+  </main>`;
+}
+
+function advanceOrderStatus(orderId) {
+  const orders = loadOrders();
+  const order = orders.find((item) => String(item.number) === decodeOrderId(orderId));
+  if (!order) return;
+
+  const next = ORDER_STEPS[ORDER_STEPS.indexOf(getOrderStatus(order)) + 1];
+  if (!next) return;
+
+  order.status = next;
+  localStorage.setItem(ordersKey, JSON.stringify(orders));
 }
 
 function rerender() {
@@ -184,6 +300,13 @@ export function bindProfilePage(showToast) {
     }
     showToast('Аккаунт создан, добро пожаловать!');
     rerender();
+  });
+
+  document.querySelectorAll('[data-order-status-next]').forEach((button) => {
+    button.addEventListener('click', () => {
+      advanceOrderStatus(button.dataset.orderStatusNext);
+      rerender();
+    });
   });
 
   document.querySelector('[data-auth-logout]')?.addEventListener('click', () => {

@@ -1,7 +1,11 @@
 /* Current Uzum header UI */
+/* The header is its own stacking context (isolation) above the page content.
+   overflow stays visible so the absolutely-positioned autocomplete dropdown can
+   extend past the header box and layer over the category row and the banner. */
 header {
   z-index: 100;
   isolation: isolate;
+  overflow: visible;
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
@@ -51,6 +55,7 @@ header .catalog:active {
 }
 header .search {
   position: relative;
+  z-index: 30; /* lift the search block (and its dropdown) above the links row */
   overflow: visible;
   height: 48px;
   border: 1px solid #e4e1e9;
@@ -65,14 +70,14 @@ header .search {
 }
 header .search-dropdown {
   position: absolute;
-  top: calc(100% + 8px);
+  top: 100%; /* flush with the search block: no gap, reads as its continuation */
   left: 0;
   right: 0;
   z-index: 50;
   max-height: 420px;
   overflow-y: auto;
   border: 1px solid #e4e1e9;
-  border-radius: 14px;
+  border-radius: 0 0 14px 14px; /* square top corners merge with the search box */
   background: #fff;
   box-shadow: 0 18px 40px rgba(35, 25, 57, 0.16);
 }
@@ -174,12 +179,24 @@ header .search-history__item:hover {
   color: #7000ff;
 }
 header .search:focus-within {
-  border-color: #a66cff;
+  border-color: #c39dff;
   background: #fff;
   box-shadow:
-    0 0 0 4px rgba(112, 0, 255, 0.11),
-    0 10px 22px rgba(52, 31, 94, 0.08);
-  transform: translateY(-1px);
+    0 0 0 2px rgba(112, 0, 255, 0.1),
+    0 8px 18px rgba(52, 31, 94, 0.07);
+}
+/* keep the attached dropdown borders in sync with the focused search outline */
+header .search:focus-within .search-dropdown {
+  border-color: #c39dff;
+}
+/* square the search bottom corners only while the dropdown is actually open,
+   so the dropdown reads as a seamless continuation of the search block */
+header .search:focus-within:has(.search-dropdown:not([hidden])) {
+  border-radius: 14px 14px 0 0;
+}
+header .search input:focus {
+  outline: none;
+  caret-color: #7000ff;
 }
 header .search input {
   font-size: 14px;
@@ -344,6 +361,12 @@ header.header--compact .head {
     height: 42px;
     border-radius: 11px;
   }
+  header .search:focus-within:has(.search-dropdown:not([hidden])) {
+    border-radius: 11px 11px 0 0;
+  }
+  header .search-dropdown {
+    border-radius: 0 0 11px 11px;
+  }
   header .search input {
     padding-left: 12px;
     font-size: 13px;
@@ -374,5 +397,89 @@ header.header--compact .head {
   header .links a {
     height: 39px;
     font-size: 12px;
+  }
+}
+
+/* Mobile bottom navigation (≤768px) */
+.mobile-nav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  /* keep the last content clear of the fixed bottom bar */
+  body {
+    padding-bottom: calc(var(--mobile-nav-height, 64px) + env(safe-area-inset-bottom));
+  }
+
+  .mobile-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 200;
+    display: flex;
+    align-items: stretch;
+    height: 64px;
+    padding-bottom: env(safe-area-inset-bottom);
+    border-top: 1px solid #e8e4ef;
+    background: #fff;
+    box-shadow: 0 -4px 18px rgba(35, 25, 57, 0.08);
+  }
+
+  .mobile-nav__item {
+    position: relative;
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    color: #6f6779;
+    text-decoration: none;
+    transition:
+      color 200ms ease,
+      background 200ms ease;
+  }
+
+  .mobile-nav__item:hover {
+    background: #f7f3fd;
+  }
+
+  .mobile-nav__item.is-active {
+    color: #7000ff;
+    font-weight: 750;
+  }
+
+  .mobile-nav__icon {
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  .mobile-nav__label {
+    font-size: 11px;
+    line-height: 1;
+  }
+
+  .mobile-nav__badge:empty {
+    display: none;
+  }
+
+  .mobile-nav__badge {
+    position: absolute;
+    top: 6px;
+    right: calc(50% - 24px);
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border: 2px solid #fff;
+    border-radius: 9px;
+    background: linear-gradient(135deg, #8f30ff, #6500df);
+    color: #fff;
+    font-size: 9px;
+    font-style: normal;
+    font-weight: 750;
+    line-height: 12px;
+    text-align: center;
+    box-shadow: 0 3px 8px rgba(112, 0, 255, 0.32);
   }
 }

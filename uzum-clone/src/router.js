@@ -9,7 +9,7 @@ import { renderCatalogPage } from './pages/catalog/CatalogPage.js';
 import { formatPrice } from './utils/formatPrice.js';
 import { renderFooter } from './components/Footer.js';
 import { renderCheckoutPage } from './pages/checkout/CheckoutPage.js';
-import { bindProfilePage, renderProfilePage } from './pages/profile/ProfilePage.js';
+import { bindProfilePage, renderOrderDetailPage, renderProfilePage } from './pages/profile/ProfilePage.js';
 import { renderNotFoundPage } from './pages/not-found/NotFoundPage.js';
 import { safePrice, safeRating, safeInt } from './utils/fallbacks.js';
 
@@ -111,6 +111,12 @@ function pageFor(route) {
     return renderCheckoutPage({ items, total: items.reduce((sum, item) => sum + safePrice(item.price) * item.qty, 0), formatPrice });
   }
   if (route === '#/profile') return renderProfilePage();
+
+  if (route.startsWith('#/order/')) {
+    const orderId = route.slice('#/order/'.length);
+    return renderOrderDetailPage(orderId);
+  }
+
   return renderNotFoundPage();
 }
 

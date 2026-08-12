@@ -291,6 +291,7 @@ export function renderHeader(state, cartCount, route = '#/') {
   ];
 
   const isActive = (link) => path === link.route.split('?')[0] && (link.param ? link.param === activeCategory : !activeCategory && path === '#/');
+  const isMobileNavActive = (target) => path === target;
 
   const userName = sessionName();
   const accountLabel = userName ? userName.split(' ')[0] : 'Войти';
@@ -361,6 +362,31 @@ export function renderHeader(state, cartCount, route = '#/') {
   </div>
 
 </header>
+
+<nav class="mobile-nav" aria-label="Мобильная навигация">
+  <a class="mobile-nav__item${isMobileNavActive('#/') ? ' is-active' : ''}" href="#/" data-route="#/">
+    <span class="mobile-nav__icon">🏠</span>
+    <small class="mobile-nav__label">Главная</small>
+  </a>
+  <a class="mobile-nav__item${isMobileNavActive('#/catalog') ? ' is-active' : ''}" href="#/catalog" data-route="#/catalog">
+    <span class="mobile-nav__icon">▦</span>
+    <small class="mobile-nav__label">Каталог</small>
+  </a>
+  <a class="mobile-nav__item${isMobileNavActive('#/favorites') ? ' is-active' : ''}" href="#/favorites" data-route="#/favorites">
+    <span class="mobile-nav__icon">${icon('heart')}</span>
+    <small class="mobile-nav__label">Избранное</small>
+    <i class="mobile-nav__badge">${state.favorite.length || ''}</i>
+  </a>
+  <a class="mobile-nav__item${isMobileNavActive('#/cart') ? ' is-active' : ''}" href="#/cart" data-route="#/cart">
+    <span class="mobile-nav__icon">${icon('cart')}</span>
+    <small class="mobile-nav__label">Корзина</small>
+    <i class="mobile-nav__badge">${cartCount || ''}</i>
+  </a>
+  <a class="mobile-nav__item${isMobileNavActive('#/profile') ? ' is-active' : ''}" href="#/profile" data-route="#/profile">
+    <span class="mobile-nav__icon">${icon('user')}</span>
+    <small class="mobile-nav__label">Профиль</small>
+  </a>
+</nav>
 
 <button
   class="scroll-top"

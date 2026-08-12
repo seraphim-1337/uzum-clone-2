@@ -93,6 +93,7 @@ function bindCheckout({ subtotal, originalTotal, formatPrice, items }) {
       payment,
       deliveryLabel: deliveryMethodLabel(delivery),
       paymentLabel: paymentMethodLabel(payment),
+      status: 'Оформлен',
       total: subtotal + cost,
       date: new Date().toISOString(),
     };
