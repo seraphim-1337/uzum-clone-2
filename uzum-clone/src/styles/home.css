@@ -197,41 +197,102 @@
   line-height: 1;
 }
 
+/* ===== PROMO CATEGORIES (under hero, single row) ===== */
+.home-promo-categories {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+.home-promo-categories .promo-category {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  height: 60px;
+  padding: 0 18px;
+  border: 1px solid #ece8f1;
+  border-radius: 16px;
+  background: #f7f7fa;
+  color: #2a2436;
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.25;
+  text-align: left;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.home-promo-categories .promo-category:hover {
+  border-color: #c9aeff;
+  background: #f3edff;
+  color: #7000ff;
+  box-shadow: 0 8px 18px rgba(87, 32, 170, 0.1);
+  transform: translateY(-2px);
+}
+.home-promo-categories .promo-category__icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+.home-promo-categories .promo-category__label {
+  min-width: 0;
+}
+
 /* ===== CATEGORIES ===== */
 .home-categories .category-grid {
+  display: grid;
   grid-template-columns: repeat(8, minmax(0, 1fr));
-  gap: 13px;
+  gap: 10px;
   background: #fff;
   border: 1px solid #ece8f1;
   border-radius: 18px;
-  padding: 17px;
+  padding: 14px;
   box-shadow: 0 6px 18px rgba(57, 25, 107, 0.05);
   margin-top: 18px;
 }
 .home-categories .category-grid button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  height: 46px;
+  padding: 0 10px;
+  border: 1px solid #ece8f1;
+  border-radius: 12px;
+  background: #faf9ff;
+  color: #2a2436;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
   transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease,
     transform 0.2s ease,
-    color 0.2s ease;
-}
-.home-categories .category-grid span {
-  height: 100px;
-  border-radius: 16px;
-  background: linear-gradient(145deg, #faf9ff, #f0eaff);
-  box-shadow: 0 7px 18px rgba(57, 25, 107, 0.07);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    background 0.2s ease;
-}
-.home-categories .category-grid button:hover span {
-  box-shadow: 0 15px 27px rgba(87, 32, 170, 0.18);
-  transform: translateY(-5px) scale(1.03);
-}
-.home-categories .category-grid button {
-  font-size: 14px;
+    box-shadow 0.2s ease;
 }
 .home-categories .category-grid button:hover {
+  border-color: #c9aeff;
+  background: #f3edff;
   color: #7000ff;
+  transform: translateY(-1px);
+}
+.home-categories .category-grid button > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.home-categories .category-grid .category-icon {
+  display: block;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
 }
 
 /* ===== PRODUCT ROWS ===== */
@@ -414,8 +475,18 @@
     right: 28px;
     top: 58px;
   }
+  .home-promo-categories {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .home-promo-categories .promo-category {
+    height: 56px;
+    padding: 0 12px;
+    font-size: 14px;
+    gap: 9px;
+  }
   .home-categories .category-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 @media (max-width: 560px) {
@@ -457,19 +528,33 @@
   .home-section__heading a {
     font-size: 12px;
   }
+  .home-promo-categories {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 14px;
+    gap: 9px;
+  }
+  .home-promo-categories .promo-category {
+    height: 56px;
+    padding: 0 12px;
+    font-size: 14px;
+    gap: 9px;
+  }
   .home-categories .category-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 11px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
     padding: 12px;
     border-radius: 14px;
   }
-  .home-categories .category-grid span {
-    height: 68px;
-    font-size: 28px;
-    border-radius: 12px;
-  }
   .home-categories .category-grid button {
+    height: 42px;
+    gap: 7px;
+    padding: 0 8px;
     font-size: 12px;
+    border-radius: 11px;
+  }
+  .home-categories .category-grid .category-icon {
+    width: 26px;
+    height: 26px;
   }
   .home-product-row {
     gap: 12px;
