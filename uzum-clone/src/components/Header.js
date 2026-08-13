@@ -328,7 +328,7 @@ export function renderHeader(state, cartCount, route = '#/') {
     <form class="search" id="search-form">
       <input
         id="search"
-        value="${search !== null ? search : state.query}"
+        value="${search !== null ? search : ''}"
         placeholder="Искать товары и категории"
       >
       <button>${icon('search')}</button>

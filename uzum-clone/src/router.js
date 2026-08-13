@@ -26,19 +26,13 @@ const fallbackProducts = [
 
 const safeParse = (raw, fallback) => { try { return JSON.parse(raw); } catch { return fallback; } };
 const categories = [['⚡', 'Распродажа'], ['📱', 'Электроника'], ['👗', 'Одежда и обувь'], ['💄', 'Красота и здоровье'], ['🏠', 'Дом и сад'], ['🍼', 'Детские товары'], ['🛒', 'Продукты питания'], ['⚽', 'Спорт и отдых']];
-const state = { products: [], cart: safeParse(localStorage.getItem('uzum-cart') || '[]', []), favorite: safeParse(localStorage.getItem('uzum-favorite') || '[]', []), query: '', category: 'Все' };
+const state = { products: [], cart: safeParse(localStorage.getItem('uzum-cart') || '[]', []), favorite: safeParse(localStorage.getItem('uzum-favorite') || '[]', []), category: 'Все' };
 
 const cartCount = () => state.cart.reduce((total, item) => total + item.qty, 0);
 const persist = () => {
   localStorage.setItem('uzum-cart', JSON.stringify(state.cart));
   localStorage.setItem('uzum-favorite', JSON.stringify(state.favorite));
 };
-const isDiscounted = (product) => Boolean(product.discount || product.discountPercentage || product.oldPrice);
-const matchesCategory = (product, category) => category === 'Все' || (category === 'Распродажа' ? isDiscounted(product) : product.category === category);
-const visibleProducts = () => state.products.filter((product) => {
-  if (state.query && !product.title.toLowerCase().includes(state.query.toLowerCase())) return false;
-  return matchesCategory(product, state.category);
-});
 const go = (route) => { location.hash = route; };
 
 function parseCatalogParams() {
@@ -63,7 +57,7 @@ function pageFor(route) {
 
   if (route === '#/') {
     return renderHomePage({
-      products: visibleProducts(),
+      products,
       favorites: state.favorite,
       formatPrice,
       categories,
@@ -145,23 +139,23 @@ function bindEvents() {
 
   document.querySelector('#search-form')?.addEventListener('submit', (event) => {
     event.preventDefault();
-    state.query = document.querySelector('#search').value.trim();
+    const query = document.querySelector('#search').value.trim();
     const catalogSearch = document.querySelector('[data-catalog-search]');
 
     if (currentRoute() === '#/catalog' && catalogSearch) {
-      catalogSearch.value = state.query;
+      catalogSearch.value = query;
       catalogSearch.dispatchEvent(new Event('input', { bubbles: true }));
 
       const { category } = parseCatalogParams();
       const params = new URLSearchParams();
-      if (state.query) params.set('query', state.query);
+      if (query) params.set('query', query);
       if (category && category !== 'all') params.set('category', category);
       const queryString = params.toString();
       history.replaceState(null, '', queryString ? `#/catalog?${queryString}` : '#/catalog');
       return;
     }
 
-    go(`#/catalog?query=${encodeURIComponent(state.query)}`);
+    go(`#/catalog?query=${encodeURIComponent(query)}`);
   });
 
   // Переход на страницу товара
