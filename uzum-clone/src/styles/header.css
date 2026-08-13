@@ -1,43 +1,94 @@
-/* Current Uzum header UI */
-/* The header is its own stacking context (isolation) above the page content.
-   overflow stays visible so the absolutely-positioned autocomplete dropdown can
-   extend past the header box and layer over the category row and the banner. */
+/* ============================================================
+   Uzum — Header (premium redesign, stage 1)
+   Compact, light, single purple accent.
+   The header keeps its own stacking context (isolation) and a
+   visible overflow so the autocomplete dropdown can extend over
+   the category row and the hero banner below it.
+   ============================================================ */
 header {
   z-index: 100;
   isolation: isolate;
   overflow: visible;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(233, 229, 240, 0.9);
+  box-shadow: 0 4px 22px rgba(46, 27, 82, 0.05);
 }
+
+/* ---- Top notice strip ---- */
+.notice {
+  font-size: 12px;
+  color: #6f6779;
+  border-bottom: 1px solid #f0edf5;
+}
+.notice .wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 34px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  text-align: center;
+}
+.notice a {
+  color: #7000ff;
+  font-weight: 650;
+  text-decoration: none;
+}
+.notice a:hover {
+  text-decoration: underline;
+}
+
+/* ---- Main head row ---- */
 header .head {
-  min-height: 82px;
-  gap: 16px;
+  min-height: 64px;
+  gap: 14px;
   transition: gap 250ms ease;
 }
+
+/* ---- Logo ---- */
 header .logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  font-size: 25px;
+  font-weight: 900;
+  letter-spacing: -0.8px;
+  color: #1d1a24;
+  text-decoration: none;
+  white-space: nowrap;
   transition:
     transform 250ms ease,
     filter 250ms ease;
 }
+header .logo b {
+  color: #7000ff;
+  font-weight: 900;
+}
 header .logo:hover {
-  filter: drop-shadow(0 4px 8px rgba(112, 0, 255, 0.16));
+  filter: drop-shadow(0 3px 8px rgba(112, 0, 255, 0.18));
   transform: translateY(-1px);
 }
+
+/* ---- Catalog button (same height as search) ---- */
 header .catalog {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  height: 46px;
-  padding: 0 18px;
-  border: 1px solid #d8bcff;
+  gap: 7px;
+  height: 44px;
+  padding: 0 16px;
+  border: 1px solid #e5d8ff;
   border-radius: 12px;
-  background: linear-gradient(135deg, #f6f0ff, #eee2ff);
-  color: #7300ff;
+  background: #f6f0ff;
+  color: #7000ff;
+  font-size: 14px;
   font-weight: 750;
-  overflow: hidden;
+  white-space: nowrap;
+  cursor: pointer;
   transition:
     transform 250ms ease,
     box-shadow 250ms ease,
@@ -45,63 +96,121 @@ header .catalog {
     background 250ms ease;
 }
 header .catalog:hover {
-  border-color: #9f69f4;
-  background: linear-gradient(135deg, #eee0ff, #e3d2ff);
-  box-shadow: 0 10px 20px rgba(112, 0, 255, 0.16);
-  transform: translateY(-2px);
+  border-color: #b98cff;
+  background: #efe3ff;
+  box-shadow: 0 8px 18px rgba(112, 0, 255, 0.16);
+  transform: translateY(-1px);
 }
 header .catalog:active {
-  transform: scale(0.96);
+  transform: scale(0.97);
 }
+header .catalog .header-icon {
+  flex-shrink: 0;
+}
+
+/* ---- Search (compact, single component with its dropdown) ---- */
 header .search {
   position: relative;
-  z-index: 30; /* lift the search block (and its dropdown) above the links row */
+  z-index: 30; /* lift above the links row + hero so the dropdown layers on top */
+  flex: 1 1 auto;
   overflow: visible;
-  height: 48px;
+  height: 44px;
   border: 1px solid #e4e1e9;
-  border-radius: 14px;
-  background: rgba(248, 247, 250, 0.94);
-  box-shadow: 0 4px 12px rgba(35, 25, 57, 0.04);
+  border-radius: 12px;
+  background: #f7f6fa;
+  box-shadow: 0 2px 10px rgba(35, 25, 57, 0.04);
   transition:
     border-color 250ms ease,
     box-shadow 250ms ease,
-    background 250ms ease,
-    transform 250ms ease;
+    background 250ms ease;
 }
+header .search:focus-within {
+  border-color: #b98cff;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(112, 0, 255, 0.12); /* single, thin focus ring */
+}
+header .search input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0 6px 0 16px;
+  border: 0;
+  background: transparent;
+  color: #221e2b;
+  font: 500 14px Inter, Arial, sans-serif;
+}
+header .search input::placeholder {
+  color: #9a93a8;
+}
+header .search input:focus {
+  outline: none;
+  caret-color: #7000ff;
+}
+header .search button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  color: #6f6779;
+  cursor: pointer;
+  transition:
+    color 250ms ease,
+    background 250ms ease;
+}
+header .search button:hover {
+  background: #eee6fb;
+  color: #7000ff;
+}
+header .search button .header-icon {
+  pointer-events: none;
+}
+
+/* ---- Autocomplete dropdown (reads as one unit with the input) ---- */
 header .search-dropdown {
   position: absolute;
-  top: 100%; /* flush with the search block: no gap, reads as its continuation */
+  top: 100%;
   left: 0;
   right: 0;
   z-index: 50;
   max-height: 420px;
   overflow-y: auto;
   border: 1px solid #e4e1e9;
-  border-radius: 0 0 14px 14px; /* square top corners merge with the search box */
+  border-top: 0;
+  border-radius: 0 0 12px 12px;
   background: #fff;
-  box-shadow: 0 18px 40px rgba(35, 25, 57, 0.16);
+  box-shadow: 0 22px 44px rgba(35, 25, 57, 0.16);
 }
 header .search-dropdown[hidden] {
   display: none;
+}
+header .search:focus-within:has(.search-dropdown:not([hidden])) {
+  border-radius: 12px 12px 0 0;
+}
+header .search:focus-within .search-dropdown {
+  border-color: #b98cff;
 }
 header .search-suggestion {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 12px;
+  padding: 10px 14px;
   border-bottom: 1px solid #f1eef6;
+  text-decoration: none;
 }
 header .search-suggestion:last-child {
   border-bottom: none;
 }
 header .search-suggestion:hover {
-  background: #f6f1ff;
+  background: #f7f2ff;
 }
 header .search-suggestion img {
   flex-shrink: 0;
-  width: 46px;
-  height: 46px;
-  border-radius: 10px;
+  width: 42px;
+  height: 42px;
+  border-radius: 9px;
   object-fit: cover;
   background: #f1eef6;
 }
@@ -125,13 +234,13 @@ header .search-suggestion-price {
   font-weight: 750;
 }
 header .search-suggestion-empty {
-  padding: 18px 12px;
+  padding: 18px 14px;
   color: #8b8495;
   font-size: 14px;
   text-align: center;
 }
 header .search-history {
-  padding: 10px 12px 8px;
+  padding: 10px 14px 8px;
 }
 header .search-history__head {
   display: flex;
@@ -162,7 +271,7 @@ header .search-history__list {
   flex-direction: column;
 }
 header .search-history__item {
-  padding: 8px 8px;
+  padding: 8px;
   border: 0;
   border-radius: 8px;
   background: transparent;
@@ -178,168 +287,166 @@ header .search-history__item:hover {
   background: #f3edff;
   color: #7000ff;
 }
-header .search:focus-within {
-  border-color: #c39dff;
-  background: #fff;
-  box-shadow:
-    0 0 0 2px rgba(112, 0, 255, 0.1),
-    0 8px 18px rgba(52, 31, 94, 0.07);
-}
-/* keep the attached dropdown borders in sync with the focused search outline */
-header .search:focus-within .search-dropdown {
-  border-color: #c39dff;
-}
-/* square the search bottom corners only while the dropdown is actually open,
-   so the dropdown reads as a seamless continuation of the search block */
-header .search:focus-within:has(.search-dropdown:not([hidden])) {
-  border-radius: 14px 14px 0 0;
-}
-header .search input:focus {
-  outline: none;
-  caret-color: #7000ff;
-}
-header .search input {
-  font-size: 14px;
-}
-header .search button {
-  position: relative;
-  width: 52px;
-  color: #6f6779;
-  border-radius: 10px;
-  overflow: hidden;
-  transition:
-    color 250ms ease,
-    background 250ms ease,
-    transform 250ms ease;
-}
-header .search button:hover {
-  background: #eee6fb;
-  color: #7000ff;
-  transform: scale(1.04);
-}
+
+/* ---- Action icons: profile / favorites / cart ---- */
 header .actions {
-  gap: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 header .actions button {
   position: relative;
-  min-width: 59px;
-  height: 52px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 44px;
+  padding: 0 11px;
   border: 1px solid transparent;
-  border-radius: 13px;
-  overflow: hidden;
+  border-radius: 12px;
+  background: transparent;
+  color: #4b4453;
+  font: 600 13px Inter, Arial, sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
   transition:
-    transform 250ms ease,
     background 250ms ease,
     color 250ms ease,
-    box-shadow 250ms ease;
+    border-color 250ms ease,
+    transform 250ms ease;
 }
 header .actions button:hover {
   background: #f4efff;
   color: #7000ff;
-  box-shadow: 0 7px 15px rgba(90, 36, 174, 0.1);
-  transform: translateY(-2px) scale(1.03);
-}
-header .actions button:active {
-  transform: scale(0.95);
-}
-header .actions button::after,
-header .catalog::after,
-header .search button::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: radial-gradient(
-    circle at center,
-    rgba(112, 0, 255, 0.18) 0,
-    rgba(112, 0, 255, 0) 62%
-  );
-  opacity: 0;
-  transform: scale(0.2);
-  transition:
-    opacity 250ms ease,
-    transform 250ms ease;
-  pointer-events: none;
-}
-header .actions button:active::after,
-header .catalog:active::after,
-header .search button:active::after {
-  opacity: 1;
-  transform: scale(1.5);
-  transition-duration: 0ms;
-}
-header .actions i {
-  top: 0;
-  right: 2px;
-  min-width: 19px;
-  height: 19px;
-  border: 2px solid #fff;
-  background: linear-gradient(135deg, #8f30ff, #6500df);
-  font-size: 10px;
-  line-height: 15px;
-  box-shadow: 0 4px 10px rgba(112, 0, 255, 0.32);
-  transition: transform 250ms ease;
-}
-header .actions button:hover i {
-  transform: scale(1.12);
-}
-header .links {
-  gap: 27px;
-  border-top: 1px solid rgba(232, 229, 238, 0.7);
-}
-header .links a {
-  font-size: 13px;
-  transition:
-    color 250ms ease,
-    transform 250ms ease;
-}
-header .links a:hover {
+  border-color: #eee4ff;
   transform: translateY(-1px);
 }
+header .actions button:active {
+  transform: scale(0.96);
+}
+header .actions .header-icon {
+  flex-shrink: 0;
+}
+header .actions i {
+  position: absolute;
+  top: 3px;
+  right: 4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border: 2px solid #fff;
+  border-radius: 99px;
+  background: #7000ff;
+  color: #fff;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 14px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(112, 0, 255, 0.3);
+}
+header .actions i:empty {
+  display: none;
+}
+
+/* ---- Shared header icon defaults ---- */
+.header-icon {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
+/* ---- Category links: thin horizontal navigation ---- */
+header .links {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  min-height: 44px;
+  border-top: 1px solid #f0edf5;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+header .links::-webkit-scrollbar {
+  display: none;
+}
+header .links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 0;
+  color: #5c5464;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition:
+    color 250ms ease,
+    border-color 250ms ease;
+}
+header .links a:hover {
+  color: #7000ff;
+}
+header .links a.is-active {
+  color: #7000ff;
+  border-bottom-color: #7000ff;
+}
 header .links .links-icon {
-  width: 21px;
-  height: 21px;
+  width: 18px;
+  height: 18px;
   object-fit: contain;
-  margin-right: 6px;
+  opacity: 0.85;
 }
 header .links a:first-child .links-icon {
   display: none;
 }
+
+/* ---- Compact state on scroll ---- */
+header.header--compact {
+  box-shadow: 0 6px 24px rgba(46, 27, 82, 0.08);
+}
 header.header--compact .notice {
-  opacity: 0.58;
-  transform: translateY(-2px);
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
 }
 header.header--compact .head {
-  transform: translateY(-1px);
+  min-height: 56px;
+  transition: min-height 250ms ease;
 }
+
+/* Home starts right under the header */
 .home--premium {
   padding-top: 42px;
 }
+
+/* ============================================================
+   Responsive
+   ============================================================ */
 @media (max-width: 850px) {
   header .head {
     min-height: auto;
     gap: 10px;
-    padding-top: 11px;
-    padding-bottom: 11px;
+    padding-top: 10px;
+    padding-bottom: 10px;
   }
   header .search {
     order: 2;
     flex-basis: 100%;
-    height: 45px;
   }
   header .catalog {
     height: 42px;
     padding: 0 13px;
   }
   header .actions button {
-    min-width: 43px;
-    height: 43px;
+    height: 42px;
+    padding: 0 9px;
+    gap: 0;
   }
   header .actions small {
     display: none;
   }
   header .links {
-    gap: 18px;
+    gap: 16px;
   }
 }
 @media (max-width: 520px) {
@@ -347,66 +454,43 @@ header.header--compact .head {
     gap: 7px;
   }
   header .logo {
-    font-size: 23px;
+    font-size: 22px;
   }
   header .catalog {
     width: 42px;
     padding: 0;
-    font-size: 19px;
   }
   header .catalog span {
     display: none;
   }
-  header .search {
-    height: 42px;
-    border-radius: 11px;
-  }
-  header .search:focus-within:has(.search-dropdown:not([hidden])) {
-    border-radius: 11px 11px 0 0;
-  }
-  header .search-dropdown {
-    border-radius: 0 0 11px 11px;
-  }
-  header .search input {
-    padding-left: 12px;
-    font-size: 13px;
-  }
-  header .search button {
-    width: 43px;
-  }
-  header .actions {
-    gap: 1px;
-  }
-  header .actions button {
-    min-width: 37px;
-    height: 39px;
-    font-size: 19px;
-    border-radius: 10px;
-  }
-  header .actions i {
-    top: -5px;
-    right: -1px;
-  }
   .notice {
     display: none;
   }
+  header .actions button {
+    width: 38px;
+    height: 40px;
+    padding: 0;
+    justify-content: center;
+  }
+  header .actions i {
+    top: 0;
+    right: -2px;
+  }
   header .links {
-    height: 39px;
-    gap: 16px;
+    min-height: 40px;
+    gap: 14px;
   }
   header .links a {
-    height: 39px;
     font-size: 12px;
   }
 }
 
-/* Mobile bottom navigation (≤768px) */
+/* ---- Mobile bottom navigation (<=768px) ---- */
 .mobile-nav {
   display: none;
 }
 
 @media (max-width: 768px) {
-  /* keep the last content clear of the fixed bottom bar */
   body {
     padding-bottom: calc(var(--mobile-nav-height, 64px) + env(safe-area-inset-bottom));
   }
@@ -451,8 +535,15 @@ header.header--compact .head {
   }
 
   .mobile-nav__icon {
-    font-size: 20px;
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
     line-height: 1;
+  }
+  .mobile-nav__icon .header-icon {
+    width: 22px;
+    height: 22px;
   }
 
   .mobile-nav__label {
@@ -473,7 +564,7 @@ header.header--compact .head {
     padding: 0 4px;
     border: 2px solid #fff;
     border-radius: 9px;
-    background: linear-gradient(135deg, #8f30ff, #6500df);
+    background: #7000ff;
     color: #fff;
     font-size: 9px;
     font-style: normal;

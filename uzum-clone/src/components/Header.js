@@ -1,21 +1,29 @@
 import '../styles/premium.css';
 import '../styles/header.css';
-import sportIcon from '../assets/categories/Gemini_Generated_Image_v320pvv320pvv320.png';
-import kidsIcon from '../assets/categories/Gemini_Generated_Image_v320pvv320pvv320 (1).png';
-import fashionIcon from '../assets/categories/Gemini_Generated_Image_v320pvv320pvv320 (2).png';
-import saleIcon from '../assets/categories/Gemini_Generated_Image_v320pvv320pvv320 (3).png';
-import beautyIcon from '../assets/categories/Gemini_Generated_Image_v320pvv320pvv320 (6).png';
-import phoneIcon from '../assets/categories/Gemini_Generated_Image_v320pvv320pvv320 (7).png';
-import groceriesIcon from '../assets/categories/Gemini_Generated_Image_v320pvv320pvv320 (8).png';
-import homeIcon from '../assets/categories/Gemini_Generated_Image_v320pvv320pvv320 (9).png';
+import sportIcon from '../assets/categories/gemini-svg (6).svg';
+import kidsIcon from '../assets/categories/gemini-svg (5).svg';
+import fashionIcon from '../assets/categories/gemini-svg (1).svg';
+import saleIcon from '../assets/categories/gemini-svg (3).svg';
+import beautyIcon from '../assets/categories/gemini-svg (9).svg';
+import phoneIcon from '../assets/categories/gemini-svg.svg';
+import groceriesIcon from '../assets/categories/gemini-svg (8).svg';
+import homeIcon from '../assets/categories/gemini-svg (4).svg';
 
-const icon = (name) => ({
-  search: '⌕',
-  heart: '♡',
-  cart: '🛒',
-  user: '♙',
-  menu: '☰'
-}[name]);
+const icon = (name) => {
+  const svg = (paths, size = 20) =>
+    `<svg class="header-icon" viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+
+  const icons = {
+    search: svg('<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>'),
+    heart: svg('<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1 7.8 7.8 7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/>'),
+    cart: svg('<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>'),
+    user: svg('<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>'),
+    menu: svg('<line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>'),
+    home: svg('<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>'),
+  };
+
+  return icons[name];
+};
 
 const categoryIcons = {
   'Распродажа': saleIcon,
@@ -182,8 +190,8 @@ function bindSearchAutocomplete(products) {
     if (historyItem) {
       const value = historyItem.textContent.trim();
       input.value = value;
-      renderSuggestions(products, value, true);
       input.focus();
+      form.requestSubmit();
       return;
     }
 
@@ -327,8 +335,7 @@ export function renderHeader(state, cartCount, route = '#/') {
       <div class="search-dropdown" id="search-dropdown" hidden></div>
     </form>
 
-    <nav class="actions">
-
+    <nav class="actions"> 
       <button data-route="#/profile" aria-label="${userName ? 'Профиль' : 'Вход или регистрация'}">
         ${icon('user')}
         <small>${accountLabel}</small>
@@ -365,11 +372,11 @@ export function renderHeader(state, cartCount, route = '#/') {
 
 <nav class="mobile-nav" aria-label="Мобильная навигация">
   <a class="mobile-nav__item${isMobileNavActive('#/') ? ' is-active' : ''}" href="#/" data-route="#/">
-    <span class="mobile-nav__icon">🏠</span>
+    <span class="mobile-nav__icon">${icon('home')}</span>
     <small class="mobile-nav__label">Главная</small>
   </a>
   <a class="mobile-nav__item${isMobileNavActive('#/catalog') ? ' is-active' : ''}" href="#/catalog" data-route="#/catalog">
-    <span class="mobile-nav__icon">▦</span>
+    <span class="mobile-nav__icon">${icon('menu')}</span>
     <small class="mobile-nav__label">Каталог</small>
   </a>
   <a class="mobile-nav__item${isMobileNavActive('#/favorites') ? ' is-active' : ''}" href="#/favorites" data-route="#/favorites">

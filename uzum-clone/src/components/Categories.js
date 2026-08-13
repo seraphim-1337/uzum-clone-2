@@ -1,13 +1,13 @@
-import kidsIcon from '../assets/categories/Gemini_Generated_Image_v320pvv320pvv320 (1).png';
-import schoolIcon from '../assets/categories/Gemini_Generated_Image_v320pvv320pvv320 (4).png';
-import groceriesIcon from '../assets/categories/Gemini_Generated_Image_v320pvv320pvv320 (8).png';
-import homeIcon from '../assets/categories/Gemini_Generated_Image_v320pvv320pvv320 (9).png';
+import kidsIcon from '../assets/categories/gemini-svg (5).svg';
+import schoolIcon from '../assets/categories/gemini-svg (2).svg';
+import groceriesIcon from '../assets/categories/gemini-svg (8).svg';
+import homeIcon from '../assets/categories/gemini-svg (4).svg';
 
 const promoCategories = [
-  { label: 'родители и дети', icon: kidsIcon },
-  { label: 'бытовая техника', icon: homeIcon },
-  { label: 'современный базар', icon: groceriesIcon },
-  { label: 'школьный базар', icon: schoolIcon },
+  { label: 'родители и дети', icon: kidsIcon, category: 'Детские товары' },
+  { label: 'бытовая техника', icon: homeIcon, category: 'Дом и сад' },
+  { label: 'современный базар', icon: groceriesIcon, category: 'Продукты питания' },
+  { label: 'школьный базар', icon: schoolIcon, category: 'Детские товары' },
 ];
 
 export function renderPromoChips() {
@@ -15,12 +15,15 @@ export function renderPromoChips() {
     <section class="home-promo-categories" data-home-section>
       ${promoCategories
         .map(
-          ({ label, icon }) => `
-            <a class="promo-category" href="#/catalog" data-route="#/catalog">
-              <img class="promo-category__icon" src="${icon}" alt="">
-              <span class="promo-category__label">${label}</span>
-            </a>
-          `
+          ({ label, icon, category }) => {
+            const route = `#/catalog?category=${encodeURIComponent(category)}`;
+            return `
+              <a class="promo-category" href="${route}" data-route="${route}">
+                <img class="promo-category__icon" src="${icon}" alt="">
+                <span class="promo-category__label">${label}</span>
+              </a>
+            `;
+          }
         )
         .join('')}
     </section>
