@@ -40,6 +40,7 @@ let scrollEffectsBound = false;
 let scrollTopBound = false;
 let outsideClickBound = false;
 let lastProducts = [];
+let headerCompact = false;
 
 function prepareImages() {
   document.querySelectorAll('img').forEach((image) => {
@@ -206,9 +207,17 @@ function bindSearchAutocomplete(products) {
 
 function setupUiEffects(products = []) {
   const updateHeader = () => {
+    if (headerCompact) {
+      if (window.scrollY <= 0) {
+        headerCompact = false;
+      }
+    } else if (window.scrollY > 40) {
+      headerCompact = true;
+    }
+
     document
       .querySelector('header')
-      ?.classList.toggle('header--compact', window.scrollY > 40);
+      ?.classList.toggle('header--compact', headerCompact);
 
     document
       .querySelector('[data-scroll-top]')
