@@ -186,6 +186,12 @@
 .home-section:hover .home-section__chip {
   transform: rotate(-6deg) scale(1.07);
 }
+.home-section__chip .home-section__icon {
+  display: block;
+  width: 27px;
+  height: 27px;
+  object-fit: contain;
+}
 .home-section__titles {
   min-width: 0;
 }

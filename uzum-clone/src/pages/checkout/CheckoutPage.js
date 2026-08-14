@@ -1,4 +1,7 @@
 import '../../styles/checkout.css';
+import emptyCartIcon from '../../assets/empty-cart.svg';
+
+
 
 const FREE_DELIVERY_THRESHOLD = 300000;
 const COURIER_COST = 20000;
@@ -120,7 +123,8 @@ export function renderCheckoutPage({ items, total, formatPrice }) {
     return `<main class="checkout-page wrap">
       <div class="checkout-page__heading"><span>Оформление заказа</span><h1>Ваш заказ</h1></div>
       <div class="checkout-empty">
-        <div class="checkout-empty__icon">🛒</div>
+        <div class="checkout-empty__icon"><img class="checkout-empty__icon-img" src="${emptyCartIcon}" alt="" aria-hidden="true"></div>
+
         <h2>Корзина пуста</h2>
         <p>Добавьте товары в корзину, чтобы оформить заказ.</p>
         <button class="checkout-empty__button" data-route="#/catalog">Перейти в каталог</button>

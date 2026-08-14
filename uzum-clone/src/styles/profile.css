@@ -40,6 +40,13 @@
   font-weight: 800;
   box-shadow: 0 10px 20px rgba(112, 0, 255, 0.22);
 }
+.profile-avatar__icon {
+  display: block;
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(112, 0, 255, 0.3));
+}
 .profile-card__intro span {
   color: #7000ff;
   font-size: 13px;

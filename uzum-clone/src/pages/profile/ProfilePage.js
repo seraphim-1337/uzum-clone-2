@@ -1,4 +1,5 @@
 import '../../styles/profile.css';
+import profileIcon from '../../assets/profile.svg';
 
 const key = 'uzum-profile';
 const usersKey = 'uzum-users';
@@ -230,7 +231,8 @@ function renderAuthPage() {
   return `<main class="profile-page wrap">
     <section class="profile-card">
       <div class="profile-card__intro">
-        <div class="profile-avatar" aria-hidden="true">👤</div>
+        <div class="profile-avatar" aria-hidden="true"><img class="profile-avatar__icon" src="${profileIcon}" alt=""></div>
+
         <div><span>Личный кабинет</span><h1>Вход или регистрация</h1><p>Войдите, чтобы оформлять заказы быстрее и хранить данные в одном месте.</p></div>
       </div>
       <div class="auth-tabs">

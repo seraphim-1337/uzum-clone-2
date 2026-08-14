@@ -208,8 +208,15 @@
   background: linear-gradient(145deg, #fff, #fbf8ff);
 }
 .favorites-empty > div {
+  display: grid;
+  place-items: center;
   font-size: 64px;
   filter: drop-shadow(0 9px 12px rgba(224, 58, 94, 0.18));
+}
+.favorites-empty__icon {
+  width: 110px;
+  height: 110px;
+  object-fit: contain;
 }
 .favorites-empty h2 {
   margin: 13px 0 6px;

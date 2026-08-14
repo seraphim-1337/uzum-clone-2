@@ -323,8 +323,15 @@
   background: linear-gradient(145deg, #fff, #fbf8ff);
 }
 .cart-empty > div {
+  display: grid;
+  place-items: center;
   font-size: 66px;
   filter: drop-shadow(0 9px 12px rgba(112, 0, 255, 0.16));
+}
+.cart-empty__icon {
+  width: 110px;
+  height: 110px;
+  object-fit: contain;
 }
 .cart-empty h2 {
   margin: 12px 0 6px;

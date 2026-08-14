@@ -245,7 +245,14 @@
   text-align: center;
 }
 .checkout-empty__icon {
+  display: grid;
+  place-items: center;
   font-size: 52px;
+}
+.checkout-empty__icon-img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
 }
 .checkout-empty h2 {
   margin: 0;

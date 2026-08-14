@@ -1,4 +1,5 @@
 import '../../styles/favorites.css';
+import emptyFavoriteIcon from '../../assets/empty-favorite.svg';
 
 function favoriteDiscount(product) {
   if (product.discount) return product.discount;
@@ -40,7 +41,7 @@ export function renderFavoritesPage({ products, favorites, formatPrice }) {
   return `<main class="wrap page favorites-page">
     <div class="favorites-page__heading"><h1>Избранное</h1></div>
     <div class="favorites-empty">
-      <div>❤️</div>
+      <div><img class="favorites-empty__icon" src="${emptyFavoriteIcon}" alt="" aria-hidden="true"></div>
       <h2>У вас пока нет избранных товаров</h2>
       <p>Добавьте понравившиеся товары</p>
       <button data-route="#/catalog">Перейти в каталог</button>

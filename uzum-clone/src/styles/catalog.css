@@ -600,8 +600,15 @@
   box-shadow: 0 1px 3px rgba(23, 20, 42, 0.04), 0 6px 18px rgba(23, 20, 42, 0.05);
 }
 .catalog-page .catalog-empty > span {
+  display: grid;
+  place-items: center;
   font-size: 52px;
   margin-bottom: 6px;
+}
+.catalog-page .catalog-empty__icon {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
 }
 .catalog-page .catalog-empty h2 {
   margin: 0 0 6px;

@@ -1,5 +1,6 @@
 import { renderCard } from '../../components/ProductCard.js';
 import '../../styles/catalog.css';
+import emptySearchIcon from '../../assets/empty-search.svg';
 
 const isDiscounted = (product) => Boolean(product.discount || product.discountPercentage || product.oldPrice);
 const isErrorProducts = (products) => products.length > 0 && !products[0].images;
@@ -167,7 +168,7 @@ function mountCatalog(products, options = {}) {
     if (!visible.length && !empty) {
       grid.insertAdjacentHTML('afterend', `
         <div class="catalog-empty" data-catalog-empty>
-          <span>🔍</span>
+          <span><img class="catalog-empty__icon" src="${emptySearchIcon}" alt="" aria-hidden="true"></span>
           <h2>Ничего не найдено</h2>
           <p>Попробуйте изменить запрос или сбросить фильтры</p>
           <button type="button" class="catalog-empty__reset" data-catalog-reset-any>Сбросить фильтры</button>

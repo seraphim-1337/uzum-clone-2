@@ -1,5 +1,6 @@
 import "../../styles/cart.css";
 import { safePrice, reviewCount, productImage } from "../../utils/fallbacks.js";
+import emptyCartIcon from "../../assets/empty-cart.svg";
 
 const PROMO_KEY = "uzum-cart-promo";
 const PROMO_CODES = { UZUM10: 0.1 };
@@ -155,5 +156,5 @@ export function renderCart(items, total, cartCount, formatPrice) {
 
 export function renderCartPage({ items, total, cartCount, formatPrice }) {
   if (items.length) return renderCart(items, total, cartCount, formatPrice);
-  return `<main class="wrap page cart-page"><div class="cart-page__heading"><h1>Корзина</h1><span>0 товаров</span></div><div class="cart-empty"><div>🛒</div><h2>Корзина пока пустая</h2><p>Добавьте товары из каталога</p><button data-route="#/catalog">Перейти в каталог</button></div></main>`;
+  return `<main class="wrap page cart-page"><div class="cart-page__heading"><h1>Корзина</h1><span>0 товаров</span></div><div class="cart-empty"><div><img class="cart-empty__icon" src="${emptyCartIcon}" alt="" aria-hidden="true"></div><h2>Корзина пока пустая</h2><p>Добавьте товары из каталога</p><button data-route="#/catalog">Перейти в каталог</button></div></main>`;
 }
