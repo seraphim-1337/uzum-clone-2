@@ -344,9 +344,16 @@
   object-fit: contain;
 }
 
-/* ===== PRODUCT ROWS ===== */
+/* ===== PRODUCT ROWS =====
+   Ширина карточки задаётся ОДНОЙ переменной на брейкпоинт,
+   поэтому каждая карточка любого ряда имеет ровно ту же ширину,
+   что и соседняя — визуально все ряды ровные. */
+.home--premium {
+  --home-card-width: clamp(180px, calc((100% - 80px) / 6), 220px);
+}
 .home-product-row {
   display: flex;
+  align-items: stretch;
   gap: 16px;
   overflow-x: auto;
   padding: 4px 4px 16px;
@@ -362,35 +369,36 @@
   background: #d9d3e6;
 }
 .home-product-row .card {
-  flex: 0 0 auto;
-  width: clamp(180px, calc((100% - 80px) / 6), 220px);
+  flex: 0 0 var(--home-card-width);
+  width: var(--home-card-width);
+  max-width: 100%;
   min-width: 0;
   scroll-snap-align: start;
 }
 @media (max-width: 1200px) {
-  .home-product-row .card {
-    width: clamp(195px, calc((100% - 64px) / 5), 235px);
+  .home--premium {
+    --home-card-width: clamp(195px, calc((100% - 64px) / 5), 235px);
   }
 }
 @media (max-width: 1024px) {
-  .home-product-row .card {
-    width: clamp(185px, calc((100% - 48px) / 4), 230px);
+  .home--premium {
+    --home-card-width: clamp(185px, calc((100% - 48px) / 4), 230px);
   }
 }
 @media (max-width: 768px) {
   .home-product-row {
     gap: 12px;
   }
-  .home-product-row .card {
-    width: clamp(180px, calc((100% - 24px) / 3), 235px);
+  .home--premium {
+    --home-card-width: clamp(180px, calc((100% - 24px) / 3), 235px);
   }
 }
 @media (max-width: 480px) {
   .home-product-row {
     gap: 10px;
   }
-  .home-product-row .card {
-    width: clamp(160px, calc((100% - 10px) / 2), 200px);
+  .home--premium {
+    --home-card-width: clamp(160px, calc((100% - 10px) / 2), 200px);
   }
 }
 
@@ -450,48 +458,127 @@
 }
 .home-product-row .card .card-body,
 .home-all-products__grid .card .card-body {
-  padding: 10px 10px 11px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  padding: 9px 10px 10px;
   gap: 6px;
 }
+
+/* Title — noticeable (14px / 600), always a 2-line block,
+   so long names never change the card height */
 .home-product-row .card .title,
 .home-all-products__grid .card .title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  height: auto;
+  min-height: 40px;
+  margin: 0;
+  overflow: hidden;
+  color: #221e2b;
   font-size: 14px;
+  font-weight: 600;
   line-height: 1.4;
+  letter-spacing: -0.1px;
 }
+
+/* Rating — compact, readable, one shared baseline */
 .home-product-row .card .rate,
 .home-all-products__grid .card .rate {
-  font-size: 12px;
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  margin: 0;
+  color: #f59e0b;
+  font-size: 12.5px;
+  font-weight: 700;
 }
+.home-product-row .card .rate span,
+.home-all-products__grid .card .rate span {
+  color: #9a9aa5;
+  font-size: 11.5px;
+  font-weight: 500;
+}
+
+/* Installment — small pale-yellow label, compact, not stretched */
 .home-product-row .card .installment,
 .home-all-products__grid .card .installment {
-  padding: 3px 7px;
+  align-self: flex-start;
+  margin: 0;
+  padding: 3px 8px;
   border-radius: 6px;
+  background: #fff7d6;
+  color: #a16207;
   font-size: 11px;
+  font-weight: 700;
+  line-height: 1.4;
+  white-space: nowrap;
 }
+
+/* Pricing — current price is the hero; old price smaller, grey, struck.
+   Резервируем две строки (цена + старая цена), чтобы старый ценник
+   не переносил строку только у части карточек и не ломал высоту ряда. */
 .home-product-row .card .card-pricing,
 .home-all-products__grid .card .card-pricing {
-  margin-top: 2px;
-  gap: 6px 8px;
+  display: flex;
+  align-items: baseline;
+  align-content: flex-start;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+  margin: 0 0 6px;
+  min-height: 48px;
 }
 .home-product-row .card .card-pricing strong,
 .home-all-products__grid .card .card-pricing strong {
+  display: block;
+  color: #1f1f26;
   font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  white-space: nowrap;
 }
 .home-product-row .card .card-pricing del,
 .home-all-products__grid .card .card-pricing del {
-  font-size: 12px;
+  color: #a7a7b3;
+  font-size: 11.5px;
+  font-weight: 500;
 }
+
+/* CTA — real button with purple accent, pinned to the card bottom
+   via margin-top: auto so every card in a row aligns */
 .home-product-row .card .add,
 .home-all-products__grid .card .add {
-  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
   min-height: 40px;
-  padding: 9px 12px;
+  margin-top: auto;
+  padding: 10px 14px;
+  border: 0;
   border-radius: 11px;
+  background: #7000ff;
+  color: #fff;
   font-size: 13.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 4px 10px rgba(112, 0, 255, 0.2);
+  transition: background 0.18s ease, box-shadow 0.18s ease;
 }
+.home-product-row .card .add:hover,
+.home-all-products__grid .card .add:hover {
+  background: #5a00cc;
+  box-shadow: 0 7px 16px rgba(112, 0, 255, 0.3);
+}
+
+/* Quantity control — same height and bottom alignment as the CTA */
 .home-product-row .card .card-quantity,
 .home-all-products__grid .card .card-quantity {
   min-height: 40px;
+  margin-top: auto;
   border-radius: 11px;
 }
 
@@ -572,6 +659,18 @@
 }
 .home-all-products__grid > [hidden] {
   display: none;
+}
+/* Карточки «Все товары» обёрнуты в <div data-home-all-card> —
+   растягиваем обёртку и карточку, чтобы каждая ячейка сетки
+   была строго одинаковой ширины и высоты. */
+.home-all-products__grid > div {
+  display: flex;
+  min-width: 0;
+}
+.home-all-products__grid > div > .card {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
 }
 .home-all-card--visible {
   animation: home-card-in 300ms ease both;
